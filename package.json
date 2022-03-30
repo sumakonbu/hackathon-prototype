@@ -1,0 +1,17 @@
+{
+  "name": "hackathon-prototype",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "studioTeaTwo <studioTeaTwo@gmail.com> (https://studioteatwo.github.io/)",
+  "license": "ISC"
+}
