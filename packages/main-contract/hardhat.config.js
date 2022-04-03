@@ -1,4 +1,5 @@
 require("@nomiclabs/hardhat-waffle");
+require('hardhat-abi-exporter');
 
 const { privateKey } = require("../../../private.json")
 
@@ -26,5 +27,14 @@ module.exports = {
       chainId: 4369,
       accounts:[privateKey]
     }
-  }
+  },
+  abiExporter: {
+    path: "./abis",
+    runOnCompile: true,
+    clear: true,
+    flat: true,
+    except: [],
+    spacing: 2,
+    pretty: true,
+  },
 };
