@@ -1,5 +1,5 @@
 {
-  "name": "main-contract",
+  "name": "oracle-contract",
   "version": "1.0.0",
   "scripts": {
     "compile": "hardhat compile",
