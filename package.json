@@ -12,6 +12,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "devDependencies": {
+    "ts-node": "^10.7.0"
+  },
   "author": "studioTeaTwo <studioTeaTwo@gmail.com> (https://studioteatwo.github.io/)",
   "license": "ISC"
 }

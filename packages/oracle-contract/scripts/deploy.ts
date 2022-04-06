@@ -6,20 +6,34 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const signer = await ethers.getSigner();
 
-  // We get the contract to deploy
+  // Deploy MainContract
   const Oracle = await ethers.getContractFactory("Oracle");
   const oracle = await Oracle.deploy();
 
   await oracle.deployed();
-
   console.log("OracleContract deployed to:", oracle.address);
+
+  // Deploy VerificationPersonalToken
+  const VerificationPersonalToken = await ethers.getContractFactory(
+    "VerificationPersonalToken"
+  );
+  const verificationPersonalToken = await VerificationPersonalToken.deploy();
+
+  await verificationPersonalToken.deployed();
+  console.log(
+    "VerificationPersonalToken deployed to:",
+    verificationPersonalToken.address
+  );
+
+  // After work
+  oracle
+    .connect(signer)
+    .setVerificationPersonalToken(verificationPersonalToken.address);
+  verificationPersonalToken
+    .connect(signer)
+    .setMainContractAddress(oracle.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

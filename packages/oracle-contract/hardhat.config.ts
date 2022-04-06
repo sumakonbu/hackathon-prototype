@@ -24,14 +24,14 @@ dotenv.config();
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
-const config: HardhatUserConfig = {
+const config = {
   solidity: "0.8.4",
-  networks:{
+  networks: {
     local: {
-      url: 'http://localhost:9933',
+      url: "http://localhost:9933",
       chainId: 4369,
-      accounts:[privateKey]
-    }
+      accounts: [privateKey],
+    },
   },
   abiExporter: {
     path: "./abis",
