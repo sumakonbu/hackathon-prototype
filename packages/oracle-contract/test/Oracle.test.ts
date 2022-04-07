@@ -68,14 +68,14 @@ describe("Oracle", function () {
     it("Should call correctly", async function () {
       const txResult = await oracle
         .connect(deployer)
-        .create(accounts[1].address, true);
+        .create(accounts[1].address, ["jp"], true);
       expect(txResult.hash).to.be.ok;
     });
 
     it("Should revert with 'User already exist!'", async function () {
-      await oracle.connect(deployer).create(accounts[2].address, true);
+      await oracle.connect(deployer).create(accounts[2].address, ["jp"], true);
       await expect(
-        oracle.connect(deployer).create(accounts[2].address, true)
+        oracle.connect(deployer).create(accounts[2].address, ["jp"], true)
       ).to.revertedWith("User already exist!");
     });
 
@@ -84,7 +84,7 @@ describe("Oracle", function () {
       await expect(
         oracle
           .connect(accountWithoutModeratorRole)
-          .create(accounts[2].address, true)
+          .create(accounts[2].address, ["jp"], true)
       ).to.revertedWith("AccessControl: account");
     });
   });
