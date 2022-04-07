@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
+import { solidityKeccak256 } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 
 import { Oracle, VerificationPersonalToken } from "../typechain";
@@ -10,6 +11,9 @@ describe("Oracle", function () {
 
   let oracle: Oracle;
   let verificationPersonalToken: VerificationPersonalToken;
+
+  const OWNER_ROLE = solidityKeccak256(["string"], ["OWNER_ROLE"]);
+  const MODERATOR_ROLE = solidityKeccak256(["string"], ["MODERATOR_ROLE"]);
 
   before(async function () {
     accounts = await ethers.getSigners();
@@ -32,6 +36,32 @@ describe("Oracle", function () {
     await verificationPersonalToken
       .connect(deployer)
       .setMainContractAddress(oracle.address);
+  });
+
+  describe("role", function () {
+    it("Should set ROLE up", async function () {
+      const ownerRole = await oracle
+        .connect(deployer)
+        .getRoleMember(OWNER_ROLE, 0);
+      expect(ownerRole).to.eq(deployer.address);
+
+      const moderatorRole = await oracle
+        .connect(deployer)
+        .getRoleMember(MODERATOR_ROLE, 0);
+      expect(moderatorRole).to.eq(deployer.address);
+    });
+
+    it("Should not have ROLE", async function () {
+      const hasOwnerRole = await oracle
+        .connect(deployer)
+        .hasRole(OWNER_ROLE, accounts[1].address);
+      expect(hasOwnerRole).to.false;
+
+      const hasModeratorRole = await oracle
+        .connect(deployer)
+        .hasRole(MODERATOR_ROLE, accounts[1].address);
+      expect(hasModeratorRole).to.false;
+    });
   });
 
   describe("create", function () {

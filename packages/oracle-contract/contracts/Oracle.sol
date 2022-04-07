@@ -21,7 +21,6 @@ contract Oracle is AccessControlEnumerable {
     constructor() {
         _setupRole(OWNER_ROLE, msg.sender);
         _setupRole(MODERATOR_ROLE, msg.sender);
-        _setRoleAdmin(OWNER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
     /**
