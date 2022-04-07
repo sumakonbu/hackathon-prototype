@@ -62,14 +62,17 @@ contract Oracle is AccessControlEnumerable {
         onlyRole(OWNER_ROLE)
     {
         verificationPersonalTokenAddress = _verificationPersonalToken;
-        verificationPersonalToken = VerificationPersonalToken(verificationPersonalTokenAddress);
-        emit VerificationPersonalTokenAddressSet(verificationPersonalTokenAddress);
+        verificationPersonalToken = VerificationPersonalToken(
+            verificationPersonalTokenAddress
+        );
+        emit VerificationPersonalTokenAddressSet(
+            verificationPersonalTokenAddress
+        );
     }
 
     /**
      * Functions to use Token
      */
 
-    function verify(address target) public view returns (bool) {
-    }
+    function verify(address target) public view returns (bool) {}
 }

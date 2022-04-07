@@ -7,7 +7,7 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 
-const { privateKey } = require("../../../private.json")
+import { privateKey } from "../../../private.json";
 
 dotenv.config();
 

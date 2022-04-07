@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "compile": "hardhat compile",
-    "prettier": "prettier --write 'contracts/**/*.sol'",
-    "deploy": "hardhat run --network local scripts/deploy.js",
+    "format": "prettier --write .",
+    "lint:check": "solhint 'contracts/**/*.sol' && prettier --check .",
+    "deploy": "hardhat run --network local scripts/deploy.ts",
     "test": "hardhat test --network hardhat"
   },
   "dependencies": {
