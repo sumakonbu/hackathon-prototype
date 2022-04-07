@@ -20,10 +20,9 @@ contract VerificationPersonalToken is OnlyMainContract {
     constructor() {}
 
     function create(address user, bool passed) public onlyMainContract {
-        require(verificationIds[user] > 0, "User already exist!");
+        require(verificationIds[user] == 0, "User already exist!");
 
-        totalSupply = totalSupply + 1;
-        uint256 tokenId = totalSupply;
+        uint256 tokenId = totalSupply + 1;
 
         verificationIds[user] = tokenId;
 
@@ -31,7 +30,10 @@ contract VerificationPersonalToken is OnlyMainContract {
         p.tokenId = tokenId;
         p.user = user;
         p.passed = passed;
-        personalTokens[tokenId] = p;
+        personalTokens.push(p);
+
+        // increment totalSupply
+        totalSupply = totalSupply + 1;
 
         emit Created(tokenId, user, passed);
     }
