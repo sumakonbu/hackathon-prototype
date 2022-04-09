@@ -6,6 +6,7 @@ abstract contract OnlyMainContract {
     address private mainContract;
 
     event MainContractSet(address indexed newAddress);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     constructor() {
         owner = msg.sender;
@@ -29,10 +30,16 @@ abstract contract OnlyMainContract {
 
     function setMainContractAddress(address _mainContract)
         public
-        virtual
         onlyOwner
     {
         mainContract = _mainContract;
         emit MainContractSet(mainContract);
+    }
+
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        address oldOwner = owner;
+        owner = newOwner;
+        emit OwnershipTransferred(oldOwner, newOwner);
     }
 }

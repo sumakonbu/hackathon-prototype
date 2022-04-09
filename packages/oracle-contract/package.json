@@ -5,7 +5,8 @@
     "compile": "hardhat compile",
     "format": "prettier --write .",
     "lint:check": "solhint 'contracts/**/*.sol' && prettier --check .",
-    "deploy": "hardhat run --network local scripts/deploy.ts",
+    "deploy:local": "hardhat run --network local scripts/deploy.ts",
+    "deploy:shibuya": "hardhat run --network shibuya scripts/deploy.ts",
     "test": "hardhat test --network hardhat"
   },
   "dependencies": {

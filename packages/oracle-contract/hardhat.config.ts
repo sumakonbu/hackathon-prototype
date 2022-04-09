@@ -32,6 +32,11 @@ const config = {
       chainId: 4369,
       accounts: [privateKey],
     },
+    shibuya: {
+      url: "https://rpc.shibuya.astar.network:8545",
+      chainId: 81,
+      accounts: [privateKey],
+    },
   },
   abiExporter: {
     path: "./abis",
