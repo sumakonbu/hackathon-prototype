@@ -1,0 +1,23 @@
+<div class="register-item">
+  <mat-form-field appearance="legacy">
+    <mat-label>EVMアドレス</mat-label>
+    <input matInput placeholder="0x0..." [formControl]="address" />
+    <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+  </mat-form-field>
+</div>
+<div class="register-item">
+  <mat-form-field appearance="fill">
+    <mat-label>国</mat-label>
+    <mat-select [formControl]="countries" multiple>
+      <mat-option *ngFor="let country of countryList" [value]="country.code"
+        >{{ country.code }} ({{ country.name }})</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+
+  <p *ngIf="countries.value && countries.value.length > 0">
+    selected: {{ countries.value }}
+  </p>
+</div>
+
+<button mat-raised-button>トークン発行する</button>

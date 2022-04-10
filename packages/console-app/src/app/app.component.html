@@ -8,11 +8,7 @@
 
 <main>
   <mat-toolbar color="primary">
-    <span>メニュー</span>
+    <span routerLink="">メニュー</span>
   </mat-toolbar>
-<mat-tab-group>
-  <mat-tab label="トークン管理"><mat-card><app-tokens></app-tokens></mat-card></mat-tab>
-  <mat-tab label="ロール管理"><mat-card><app-roles></app-roles></mat-card></mat-tab>
-</mat-tab-group>
+  <router-outlet></router-outlet>
 </main>
-

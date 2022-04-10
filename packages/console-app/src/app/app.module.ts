@@ -4,29 +4,30 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { TokensComponent } from './tokens/tokens.component';
-import { RolesComponent } from './roles/roles.component';
-import {MatCardModule} from '@angular/material/card';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatToolbarModule} from '@angular/material/toolbar';
-
-
+import { PersonsComponent } from './persons/persons.component';
+import { RegisterComponent } from './persons/register/register.component';
+import { ListComponent } from './persons/list/list.component';
+import { MenuComponent } from './menu/menu.component';
+import { MaterialModule } from './material.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TokensComponent,
-    RolesComponent
+    PersonsComponent,
+    RegisterComponent,
+    ListComponent,
+    MenuComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatToolbarModule,
-    MatTabsModule,
-    MatCardModule
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
