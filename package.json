@@ -10,7 +10,7 @@
     ]
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:console": "yarn workspace console-app build"
   },
   "devDependencies": {
     "ts-node": "^10.7.0"
