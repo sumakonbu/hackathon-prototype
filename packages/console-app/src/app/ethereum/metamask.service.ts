@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ethers, providers, Signer } from 'ethers';
+import { PersonalToken } from '../persons/type';
 import OracleAbis from './abis/Oracle.json';
 import { OracleAddress } from './constants';
 import { Oracle } from './types/Oracle';
@@ -60,11 +61,39 @@ export class MetamaskService {
     this.setOracle();
   }
 
-  registerPersonalToken(userAddress, countries) {
+  registerPersonalToken(userAddress: string, countries: string[]) {
     if (!this.isEthereumReady) {
       throw new Error('Ethereum not ready!');
     }
-    return this.contract.createPersonalToken(userAddress, countries, true);
+    return this.contract.createPersonalToken(
+      userAddress,
+      JSON.stringify(countries),
+      true
+    );
+  }
+
+  async listPersonalToken() {
+    if (!this.isEthereumReady) {
+      throw new Error('Ethereum not ready!');
+    }
+
+    // parse
+    const data = await this.contract.listPersonalToken();
+    const decode = ethers.utils.defaultAbiCoder.decode(
+      ['tuple(uint256 tokenId, address user, string countries, bool passed)[]'],
+      data
+    );
+
+    // map
+    const list: PersonalToken[] = decode[0].map((token) => {
+      return {
+        tokenId: token[0].toNumber(),
+        user: token[1],
+        countries: JSON.parse(token[2]),
+        passed: token[3],
+      };
+    });
+    return list;
   }
 
   private setOracle() {

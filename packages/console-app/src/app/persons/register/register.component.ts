@@ -47,7 +47,7 @@ export class RegisterComponent {
         this.address.value,
         this.countries.value
       );
-      this.messageService.info(`txを発行しました! ${explorerUrl.shibuya}/tx/${result.hash}`);
+      this.messageService.info(`txを発行しました! ${result.hash}`);
     } catch (error) {
       this.messageService.error(error.message);
       return;

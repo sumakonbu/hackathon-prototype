@@ -8,7 +8,7 @@ export class MessageService {
   constructor(private _snackBar: MatSnackBar) {}
 
   info(message: string) {
-    return this._snackBar.open(message, undefined, {
+    return this._snackBar.open(message, 'ok', {
       verticalPosition: 'top',
     });
   }

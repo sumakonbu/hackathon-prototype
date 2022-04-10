@@ -1,1 +1,12 @@
 <p>list works!</p>
+
+<mat-card *ngFor="let person of persons"
+  ><mat-card-header>
+    <div mat-card-avatar></div>
+    <mat-card-title>名前</mat-card-title>
+    <mat-card-subtitle>{{ person.user }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    {{ person.countries }}
+  </mat-card-content>
+</mat-card>

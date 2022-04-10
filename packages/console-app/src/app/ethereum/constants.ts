@@ -1,9 +1,9 @@
 export const OracleAddress = {
-  local: '0x6B52F9F4b2cD9De411cFc3F1cfb7e285A3B87dc7',
-  shibuya: '0xE7079c7aFe2BA707110b10774d6452c5706C6a09',
+  local: '0x9AAb72eFe6ac57a802735034Ca91ECcC64915792',
+  shibuya: '0xa9Bc67ae14471456c5b7587f229c63643847deE3',
 };
 
 export const explorerUrl = {
   local: '',
-  shibuya: 'https://blockscout.com/shibuya'
-}
+  shibuya: 'https://blockscout.com/shibuya',
+};
