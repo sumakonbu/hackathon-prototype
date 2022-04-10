@@ -2,7 +2,7 @@
   "name": "oracle-contract",
   "version": "1.0.0",
   "scripts": {
-    "compile": "hardhat compile",
+    "compile": "hardhat compile && ts-node scripts/copy-artifact.ts",
     "format": "prettier --write .",
     "lint:check": "solhint 'contracts/**/*.sol' && prettier --check .",
     "deploy:local": "hardhat run --network local scripts/deploy.ts",
