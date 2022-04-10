@@ -34,6 +34,16 @@ export class MetamaskService {
     }
 
     try {
+      this.accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      console.log('accounts', this.accounts);
+    } catch (error) {
+      throw new Error('Failed to get MetaMask Accounts!');
+    }
+    if (this.accounts === undefined || this.accounts.length === 0) {
+      throw new Error('MetaMask does not have any accounts!');
+    }
+
+    try {
       this.currentAccount = (ethereum as any).selectedAddress;
       console.log('currentAccount', this.currentAccount);
     } catch (error) {
@@ -59,7 +69,7 @@ export class MetamaskService {
 
   private setOracle() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner(this.currentAccount);
+    const signer = provider.getSigner();
     this.contract = new ethers.Contract(
       this.currentNetwork === '81'
         ? OracleAddress.shibuya

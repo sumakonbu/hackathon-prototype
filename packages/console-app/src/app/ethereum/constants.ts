@@ -1,4 +1,4 @@
 export const OracleAddress = {
   local: '0x6B52F9F4b2cD9De411cFc3F1cfb7e285A3B87dc7',
-  shibuya: '0xe0dd4Cf05072C404D599DAF063f4d40623BE12D3',
+  shibuya: '0xE7079c7aFe2BA707110b10774d6452c5706C6a09',
 };
