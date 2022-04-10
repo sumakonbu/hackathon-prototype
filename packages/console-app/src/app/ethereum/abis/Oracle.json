@@ -6,7 +6,7 @@
   "event RoleRevoked(bytes32 indexed,address indexed,address indexed)",
   "event VerificationPersonalTokenAddressSet(address indexed)",
   "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
-  "function createPersonalToken(address,string[],bool)",
+  "function createPersonalToken(address,string,bool)",
   "function getRoleAdmin(bytes32) view returns (bytes32)",
   "function getRoleMember(bytes32,uint256) view returns (address)",
   "function getRoleMemberCount(bytes32) view returns (uint256)",

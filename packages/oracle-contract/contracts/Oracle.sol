@@ -29,7 +29,7 @@ contract Oracle is AccessControlEnumerable {
 
     function createPersonalToken(
         address user,
-        string[] memory countries,
+        string memory countries,
         bool passed
     ) public onlyRole(MODERATOR_ROLE) {
         verificationPersonalToken.create(user, countries, passed);

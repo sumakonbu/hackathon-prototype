@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { ethers } from 'ethers';
+import { explorerUrl } from 'src/app/ethereum/constants';
 import { MetamaskService } from 'src/app/ethereum/metamask.service';
 import { MessageService } from 'src/app/services/message.service';
 
@@ -46,7 +47,7 @@ export class RegisterComponent {
         this.address.value,
         this.countries.value
       );
-      this.messageService.info(`txを発行しました! ${result.hash}`);
+      this.messageService.info(`txを発行しました! ${explorerUrl.shibuya}/tx/${result.hash}`);
     } catch (error) {
       this.messageService.error(error.message);
       return;

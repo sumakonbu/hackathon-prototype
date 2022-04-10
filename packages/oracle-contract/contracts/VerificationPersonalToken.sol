@@ -8,12 +8,12 @@ contract VerificationPersonalToken is OnlyMainContract {
     struct PersonalToken {
         uint256 tokenId;
         address user;
-        string[] countries;
+        string countries;
         bool passed;
     }
     PersonalToken[] public personalTokens;
-    mapping(address => uint256) private verificationIds;
-    uint256 private totalSupply = 0;
+    mapping(address => uint256) public verificationIds;
+    uint256 public totalSupply = 0;
 
     // Events
     event Created(uint256 tokenId, address indexed user, bool passed);
@@ -22,7 +22,7 @@ contract VerificationPersonalToken is OnlyMainContract {
 
     function create(
         address user,
-        string[] memory countries,
+        string memory countries,
         bool passed
     ) public onlyMainContract {
         require(verificationIds[user] == 0, "User already exist!");
