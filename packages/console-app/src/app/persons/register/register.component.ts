@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component } from '@angular/core';
+import { AbstractControl, FormControl, Validators } from '@angular/forms';
+import { ethers } from 'ethers';
+import { MetamaskService } from 'src/app/ethereum/metamask.service';
+import { MessageService } from 'src/app/services/message.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent implements OnInit {
-  address = new FormControl();
-  countries = new FormControl();
+export class RegisterComponent {
+  address = new FormControl('', [Validators.required, this.addressValidator]);
+  countries = new FormControl('', [Validators.required]);
 
   countryList = [
     { code: 'JPN', name: '日本' },
@@ -20,7 +23,38 @@ export class RegisterComponent implements OnInit {
     { code: 'RUS', name: 'ロシア' },
   ];
 
-  constructor() {}
+  constructor(
+    private readonly messageService: MessageService,
+    private readonly metamaskService: MetamaskService
+  ) {}
 
-  ngOnInit(): void {}
+  async issue() {
+    if (this.address.invalid || this.countries.invalid) {
+      this.messageService.error('入力が正しくありません。');
+      return;
+    }
+
+    try {
+      await this.metamaskService.connectToMetaMask();
+    } catch (error: any) {
+      this.messageService.error(error.message);
+      return;
+    }
+
+    try {
+      const result = await this.metamaskService.registerPersonalToken(
+        this.address.value,
+        this.countries.value
+      );
+      this.messageService.info(`txを発行しました! ${result.hash}`);
+    } catch (error) {
+      this.messageService.error(error.message);
+      return;
+    }
+  }
+
+  private addressValidator(control: AbstractControl) {
+    const isAddress = ethers.utils.isAddress(control.value);
+    return !isAddress ? { invalidAddress: { value: control.value } } : null;
+  }
 }

@@ -3,6 +3,7 @@
     <mat-label>EVMアドレス</mat-label>
     <input matInput placeholder="0x0..." [formControl]="address" />
     <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+    <mat-error *ngIf="address.invalid">アドレス形式が間違っています</mat-error>
   </mat-form-field>
 </div>
 <div class="register-item">
@@ -20,4 +21,4 @@
   </p>
 </div>
 
-<button mat-raised-button>トークン発行する</button>
+<button mat-raised-button (click)="issue()">トークン発行する</button>
