@@ -64,18 +64,22 @@ describe("Oracle", function () {
     });
   });
 
-  describe("create", function () {
+  describe("createPersonalToken", function () {
     it("Should call correctly", async function () {
       const txResult = await oracle
         .connect(deployer)
-        .create(accounts[1].address, ["jp"], true);
+        .createPersonalToken(accounts[1].address, ["jp"], true);
       expect(txResult.hash).to.be.ok;
     });
 
     it("Should revert with 'User already exist!'", async function () {
-      await oracle.connect(deployer).create(accounts[2].address, ["jp"], true);
+      await oracle
+        .connect(deployer)
+        .createPersonalToken(accounts[2].address, ["jp"], true);
       await expect(
-        oracle.connect(deployer).create(accounts[2].address, ["jp"], true)
+        oracle
+          .connect(deployer)
+          .createPersonalToken(accounts[2].address, ["jp"], true)
       ).to.revertedWith("User already exist!");
     });
 
@@ -84,7 +88,7 @@ describe("Oracle", function () {
       await expect(
         oracle
           .connect(accountWithoutModeratorRole)
-          .create(accounts[2].address, ["jp"], true)
+          .createPersonalToken(accounts[2].address, ["jp"], true)
       ).to.revertedWith("AccessControl: account");
     });
   });

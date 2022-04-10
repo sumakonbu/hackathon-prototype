@@ -27,7 +27,7 @@ contract Oracle is AccessControlEnumerable {
      * Functions to manage Token for MODERATOR_ROLE
      */
 
-    function create(
+    function createPersonalToken(
         address user,
         string[] memory countries,
         bool passed
@@ -35,12 +35,14 @@ contract Oracle is AccessControlEnumerable {
         verificationPersonalToken.create(user, countries, passed);
     }
 
-    function modify(address user, bool passed)
+    function modifyPersonalToken(address user, bool passed)
         public
         onlyRole(MODERATOR_ROLE)
     {}
 
-    function list() public {}
+    function listPersonalToken() public view returns (bytes memory) {
+        return verificationPersonalToken.list();
+    }
 
     /**
      * Functions to manage Roles for OWNER_ROLE

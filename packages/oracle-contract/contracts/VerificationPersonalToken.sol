@@ -11,7 +11,7 @@ contract VerificationPersonalToken is OnlyMainContract {
         string[] countries;
         bool passed;
     }
-    PersonalToken[] private personalTokens;
+    PersonalToken[] public personalTokens;
     mapping(address => uint256) private verificationIds;
     uint256 private totalSupply = 0;
 
@@ -46,7 +46,9 @@ contract VerificationPersonalToken is OnlyMainContract {
 
     function modify(address user, bool passed) public onlyMainContract {}
 
-    function list() public onlyMainContract {}
+    function list() public view onlyMainContract returns (bytes memory) {
+        return (abi.encode(personalTokens));
+    }
 
     function verify(address target)
         public
