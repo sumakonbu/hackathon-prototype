@@ -11,8 +11,9 @@ contract VerificationPersonalToken is OnlyMainContract {
         string countries;
         bool passed;
     }
-    PersonalToken[] public personalTokens;
-    mapping(address => uint256) public verificationIds;
+    address[] public users;
+    mapping(address => uint256) public personalTokenIds;
+    mapping(uint256 => PersonalToken) public personalTokens;
     uint256 public totalSupply = 0;
 
     // Events
@@ -25,21 +26,22 @@ contract VerificationPersonalToken is OnlyMainContract {
         string memory countries,
         bool passed
     ) public onlyMainContract {
-        require(verificationIds[user] == 0, "User already exist!");
+        require(personalTokenIds[user] == 0, "User already exist!");
 
         uint256 tokenId = totalSupply + 1;
 
-        verificationIds[user] = tokenId;
+        personalTokenIds[user] = tokenId;
 
         PersonalToken memory p;
         p.tokenId = tokenId;
         p.user = user;
         p.countries = countries;
         p.passed = passed;
-        personalTokens.push(p);
+        personalTokens[tokenId] = p;
 
         // increment totalSupply
         totalSupply = totalSupply + 1;
+        users.push(user);
 
         emit Created(tokenId, user, passed);
     }
@@ -47,7 +49,13 @@ contract VerificationPersonalToken is OnlyMainContract {
     function modify(address user, bool passed) public onlyMainContract {}
 
     function list() public view onlyMainContract returns (bytes memory) {
-        return (abi.encode(personalTokens));
+        PersonalToken[] memory personalTokenSet = new PersonalToken[](users.length);
+        for(uint256 i=0; i < users.length; i++) {
+            address user = users[i];
+            uint256 tokenId = personalTokenIds[user];
+            personalTokenSet[i] = personalTokens[tokenId];
+        }
+        return (abi.encode(personalTokenSet));
     }
 
     function verify(address target)
@@ -57,7 +65,7 @@ contract VerificationPersonalToken is OnlyMainContract {
         returns (bool)
     {
         // Verify
-        uint256 tokenId = verificationIds[target];
+        uint256 tokenId = personalTokenIds[target];
         if (tokenId == 0) {
             // token doesn't exist.
             return false;

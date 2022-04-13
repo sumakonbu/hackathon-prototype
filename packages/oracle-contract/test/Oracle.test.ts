@@ -18,11 +18,10 @@ describe("Oracle", function () {
   before(async function () {
     accounts = await ethers.getSigners();
     deployer = accounts[0];
-    console.log("accounts:", accounts[0].address, accounts[1].address);
 
+    // Create contract
     const Oracle = await ethers.getContractFactory("Oracle");
     oracle = await (await Oracle.deploy()).deployed();
-
     const VerificationPersonalToken = await ethers.getContractFactory(
       "VerificationPersonalToken"
     );
@@ -30,6 +29,7 @@ describe("Oracle", function () {
       await VerificationPersonalToken.deploy()
     ).deployed();
 
+    // After work
     await oracle
       .connect(deployer)
       .setVerificationPersonalToken(verificationPersonalToken.address);
@@ -68,18 +68,18 @@ describe("Oracle", function () {
     it("Should call correctly", async function () {
       const txResult = await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[1].address, ["jp"], true);
+        .createPersonalToken(accounts[1].address, "JPN,USA", true);
       expect(txResult.hash).to.be.ok;
     });
 
     it("Should revert with 'User already exist!'", async function () {
       await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[2].address, ["jp"], true);
+        .createPersonalToken(accounts[2].address, "JPN,USA", true);
       await expect(
         oracle
           .connect(deployer)
-          .createPersonalToken(accounts[2].address, ["jp"], true)
+          .createPersonalToken(accounts[2].address, "JPN,USA", true)
       ).to.revertedWith("User already exist!");
     });
 
@@ -88,7 +88,7 @@ describe("Oracle", function () {
       await expect(
         oracle
           .connect(accountWithoutModeratorRole)
-          .createPersonalToken(accounts[2].address, ["jp"], true)
+          .createPersonalToken(accounts[2].address, "JPN,USA", true)
       ).to.revertedWith("AccessControl: account");
     });
   });
