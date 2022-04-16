@@ -10,7 +10,8 @@
     ]
   },
   "scripts": {
-    "build:console": "yarn workspace console-app build"
+    "build:console-app": "yarn workspace console-app build",
+    "build:sample-app": "yarn workspace sample-app build"
   },
   "devDependencies": {
     "ts-node": "^10.7.0"
