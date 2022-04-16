@@ -4,19 +4,23 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 import "./VerificationPersonalToken.sol";
+import "./VerificationContractToken.sol";
 
 contract Oracle is AccessControlEnumerable {
     // Composition
     address public verificationPersonalTokenAddress;
     VerificationPersonalToken private verificationPersonalToken;
+    address public verificationContractTokenAddress;
+    VerificationContractToken private verificationContractToken;
 
     // Roles
     bytes32 private constant OWNER_ROLE = keccak256("OWNER_ROLE"); // People to own VerificationToken
     bytes32 private constant MODERATOR_ROLE = keccak256("MODERATOR_ROLE"); // People to manage VerificationToken
 
     // Events
-    event Minted(uint256 tokenId, address indexed user, bool passed);
+    event Minted(uint256 tokenId, address indexed userAddress, bool passed);
     event VerificationPersonalTokenAddressSet(address indexed newAddress);
+    event VerificationContractTokenAddressSet(address indexed newAddress);
 
     constructor() {
         _setupRole(OWNER_ROLE, msg.sender);
@@ -24,24 +28,45 @@ contract Oracle is AccessControlEnumerable {
     }
 
     /**
-     * Functions to manage Token for MODERATOR_ROLE
+     * Functions to manage Personal Token for MODERATOR_ROLE
      */
 
     function createPersonalToken(
-        address user,
+        address userAddress,
         string memory countries,
         bool passed
     ) public onlyRole(MODERATOR_ROLE) {
-        verificationPersonalToken.create(user, countries, passed);
+        verificationPersonalToken.create(userAddress, countries, passed);
     }
 
-    function modifyPersonalToken(address user, bool passed)
+    function modifyPersonalToken(address userAddress, bool passed)
         public
         onlyRole(MODERATOR_ROLE)
     {}
 
     function listPersonalToken() public view returns (bytes memory) {
         return verificationPersonalToken.list();
+    }
+
+    /**
+     * Functions to manage Contract Token for MODERATOR_ROLE
+     */
+
+    function createContractToken(
+        address contractAddress,
+        string memory countries,
+        bool passed
+    ) public onlyRole(MODERATOR_ROLE) {
+        verificationContractToken.create(contractAddress, countries, passed);
+    }
+
+    function modifyContractToken(address contractAddress, bool passed)
+        public
+        onlyRole(MODERATOR_ROLE)
+    {}
+
+    function listContractToken() public view returns (bytes memory) {
+        return verificationContractToken.list();
     }
 
     /**
@@ -75,11 +100,27 @@ contract Oracle is AccessControlEnumerable {
         );
     }
 
+    function setVerificationContractToken(address _verificationContractToken)
+        public
+        onlyRole(OWNER_ROLE)
+    {
+        verificationContractTokenAddress = _verificationContractToken;
+        verificationContractToken = VerificationContractToken(
+            verificationContractTokenAddress
+        );
+        emit VerificationContractTokenAddressSet(
+            verificationContractTokenAddress
+        );
+    }
+
     /**
      * Functions to use Token
      */
 
     function verify(address target) public view returns (bool) {
-        return verificationPersonalToken.verify(target);
+        require(verificationContractToken.verify(msg.sender), "Contract not verified!");
+        require(verificationPersonalToken.verify(target), "User not verified!");
+        
+        return true;
     }
 }

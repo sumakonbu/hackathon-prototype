@@ -7,7 +7,7 @@ contract VerificationPersonalToken is OnlyMainContract {
     // VerificationToken
     struct PersonalToken {
         uint256 tokenId;
-        address user;
+        address userAddress;
         string countries;
         bool passed;
     }
@@ -17,42 +17,48 @@ contract VerificationPersonalToken is OnlyMainContract {
     uint256 public totalSupply = 0;
 
     // Events
-    event Created(uint256 tokenId, address indexed user, bool passed);
+    event Created(uint256 tokenId, address indexed userAddress, bool passed);
 
     constructor() {}
 
     function create(
-        address user,
+        address userAddress,
         string memory countries,
         bool passed
     ) public onlyMainContract {
-        require(personalTokenIds[user] == 0, "User already exist!");
+        require(personalTokenIds[userAddress] == 0, "User already exist!");
 
         uint256 tokenId = totalSupply + 1;
 
-        personalTokenIds[user] = tokenId;
+        personalTokenIds[userAddress] = tokenId;
 
         PersonalToken memory p;
         p.tokenId = tokenId;
-        p.user = user;
+        p.userAddress = userAddress;
         p.countries = countries;
         p.passed = passed;
         personalTokens[tokenId] = p;
 
         // increment totalSupply
         totalSupply = totalSupply + 1;
-        users.push(user);
+        users.push(userAddress);
 
-        emit Created(tokenId, user, passed);
+        emit Created(tokenId, userAddress, passed);
     }
 
-    function modify(address user, bool passed) public onlyMainContract {}
+    function modify(
+        address userAddress,
+        string memory countries,
+        bool passed
+    ) public onlyMainContract {}
 
     function list() public view onlyMainContract returns (bytes memory) {
-        PersonalToken[] memory personalTokenSet = new PersonalToken[](users.length);
-        for(uint256 i=0; i < users.length; i++) {
-            address user = users[i];
-            uint256 tokenId = personalTokenIds[user];
+        PersonalToken[] memory personalTokenSet = new PersonalToken[](
+            users.length
+        );
+        for (uint256 i = 0; i < users.length; i++) {
+            address userAddress = users[i];
+            uint256 tokenId = personalTokenIds[userAddress];
             personalTokenSet[i] = personalTokens[tokenId];
         }
         return (abi.encode(personalTokenSet));
