@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MetamaskService } from 'src/app/ethereum/metamask.service';
-import { MessageService } from 'src/app/services/message.service';
+import { MessageService } from 'src/app/shared/message.service';
 import { PersonalToken } from '../type';
 
 @Component({
@@ -9,7 +9,7 @@ import { PersonalToken } from '../type';
   styleUrls: ['./list.component.scss'],
 })
 export class ListComponent implements OnInit {
-  persons: PersonalToken[];
+  persons$ = this.metamaskService.persons$.asObservable();
 
   constructor(
     private readonly messageService: MessageService,
@@ -23,6 +23,6 @@ export class ListComponent implements OnInit {
       this.messageService.error(error.message);
       return;
     }
-    this.persons = await this.metamaskService.listPersonalToken();
+    this.metamaskService.listPersonalToken();
   }
 }

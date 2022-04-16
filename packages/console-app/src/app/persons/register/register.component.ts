@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormControl, Validators } from '@angular/forms';
-import { ethers } from 'ethers';
-import { explorerUrl } from 'src/app/ethereum/constants';
+import { FormControl, Validators } from '@angular/forms';
 import { MetamaskService } from 'src/app/ethereum/metamask.service';
-import { MessageService } from 'src/app/services/message.service';
+import { addressValidator } from 'src/app/shared/function';
+import { MessageService } from 'src/app/shared/message.service';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +10,7 @@ import { MessageService } from 'src/app/services/message.service';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
-  address = new FormControl('', [Validators.required, this.addressValidator]);
+  address = new FormControl('', [Validators.required, addressValidator]);
   countries = new FormControl('', [Validators.required]);
 
   countryList = [
@@ -52,15 +51,5 @@ export class RegisterComponent {
       this.messageService.error(error.message);
       return;
     }
-  }
-
-  private addressValidator(control: AbstractControl) {
-    // disable to make debug easy with TESTNET.
-    // if (this.metamaskService.currentNetwork !== '336') {
-    //   return null;
-    // }
-
-    const isAddress = ethers.utils.isAddress(control.value);
-    return !isAddress ? { invalidAddress: { value: control.value } } : null;
   }
 }

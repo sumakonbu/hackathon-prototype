@@ -10,6 +10,8 @@ import { ListComponent } from './persons/list/list.component';
 import { MenuComponent } from './menu/menu.component';
 import { MaterialModule } from './material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DebugComponent } from './debug/debug.component';
+import { RolesComponent } from './roles/roles.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RegisterComponent,
     ListComponent,
     MenuComponent,
+    DebugComponent,
+    RolesComponent,
   ],
   imports: [
     BrowserModule,

@@ -9,6 +9,12 @@
 <main>
   <mat-toolbar color="primary">
     <span routerLink="">メニュー</span>
+    <span class="spacer"></span>
+    <mat-spinner
+      *ngIf="loading$ | async"
+      color="accent"
+      diameter="30"
+    ></mat-spinner>
   </mat-toolbar>
   <router-outlet></router-outlet>
 </main>

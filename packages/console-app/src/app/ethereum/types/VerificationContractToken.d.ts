@@ -19,21 +19,33 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
+interface VerificationContractTokenInterface extends ethers.utils.Interface {
   functions: {
+    "contractAddresses(uint256)": FunctionFragment;
+    "contractTokenIds(address)": FunctionFragment;
+    "contractTokens(uint256)": FunctionFragment;
     "create(address,string,bool)": FunctionFragment;
     "list()": FunctionFragment;
-    "modify(address,string,bool)": FunctionFragment;
-    "personalTokenIds(address)": FunctionFragment;
-    "personalTokens(uint256)": FunctionFragment;
+    "modify(address,bool)": FunctionFragment;
     "purge()": FunctionFragment;
     "setMainContractAddress(address)": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "users(uint256)": FunctionFragment;
     "verify(address)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "contractAddresses",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "contractTokenIds",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "contractTokens",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "create",
     values: [string, string, boolean]
@@ -41,15 +53,7 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "list", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "modify",
-    values: [string, string, boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "personalTokenIds",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "personalTokens",
-    values: [BigNumberish]
+    values: [string, boolean]
   ): string;
   encodeFunctionData(functionFragment: "purge", values?: undefined): string;
   encodeFunctionData(
@@ -64,20 +68,23 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "users", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "verify", values: [string]): string;
 
+  decodeFunctionResult(
+    functionFragment: "contractAddresses",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "contractTokenIds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "contractTokens",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "create", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "list", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "modify", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "personalTokenIds",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "personalTokens",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "purge", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMainContractAddress",
@@ -91,7 +98,6 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "users", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "verify", data: BytesLike): Result;
 
   events: {
@@ -108,7 +114,7 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
 export type CreatedEvent = TypedEvent<
   [BigNumber, string, boolean] & {
     tokenId: BigNumber;
-    userAddress: string;
+    contractAddress: string;
     passed: boolean;
   }
 >;
@@ -121,7 +127,7 @@ export type OwnershipTransferredEvent = TypedEvent<
   [string, string] & { previousOwner: string; newOwner: string }
 >;
 
-export class VerificationPersonalToken extends BaseContract {
+export class VerificationContractToken extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -162,11 +168,33 @@ export class VerificationPersonalToken extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: VerificationPersonalTokenInterface;
+  interface: VerificationContractTokenInterface;
 
   functions: {
+    contractAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    contractTokenIds(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    contractTokens(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, string, string, boolean] & {
+        tokenId: BigNumber;
+        contractAddress: string;
+        countries: string;
+        passed: boolean;
+      }
+    >;
+
     create(
-      userAddress: string,
+      contractAddress: string,
       countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -175,28 +203,10 @@ export class VerificationPersonalToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<[string]>;
 
     modify(
-      userAddress: string,
-      countries: string,
+      contractAddress: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    personalTokenIds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    personalTokens(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, string, string, boolean] & {
-        tokenId: BigNumber;
-        userAddress: string;
-        countries: string;
-        passed: boolean;
-      }
-    >;
 
     purge(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -214,13 +224,30 @@ export class VerificationPersonalToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    users(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
-
     verify(target: string, overrides?: CallOverrides): Promise<[boolean]>;
   };
 
+  contractAddresses(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  contractTokenIds(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  contractTokens(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, string, string, boolean] & {
+      tokenId: BigNumber;
+      contractAddress: string;
+      countries: string;
+      passed: boolean;
+    }
+  >;
+
   create(
-    userAddress: string,
+    contractAddress: string,
     countries: string,
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -229,25 +256,10 @@ export class VerificationPersonalToken extends BaseContract {
   list(overrides?: CallOverrides): Promise<string>;
 
   modify(
-    userAddress: string,
-    countries: string,
+    contractAddress: string,
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  personalTokenIds(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  personalTokens(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, string, string, boolean] & {
-      tokenId: BigNumber;
-      userAddress: string;
-      countries: string;
-      passed: boolean;
-    }
-  >;
 
   purge(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -265,13 +277,33 @@ export class VerificationPersonalToken extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  users(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
   verify(target: string, overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
+    contractAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    contractTokenIds(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    contractTokens(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, string, string, boolean] & {
+        tokenId: BigNumber;
+        contractAddress: string;
+        countries: string;
+        passed: boolean;
+      }
+    >;
+
     create(
-      userAddress: string,
+      contractAddress: string,
       countries: string,
       passed: boolean,
       overrides?: CallOverrides
@@ -280,28 +312,10 @@ export class VerificationPersonalToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<string>;
 
     modify(
-      userAddress: string,
-      countries: string,
+      contractAddress: string,
       passed: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    personalTokenIds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    personalTokens(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, string, string, boolean] & {
-        tokenId: BigNumber;
-        userAddress: string;
-        countries: string;
-        passed: boolean;
-      }
-    >;
 
     purge(overrides?: CallOverrides): Promise<boolean>;
 
@@ -317,28 +331,26 @@ export class VerificationPersonalToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    users(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
     verify(target: string, overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {
     "Created(uint256,address,bool)"(
       tokenId?: null,
-      userAddress?: string | null,
+      contractAddress?: string | null,
       passed?: null
     ): TypedEventFilter<
       [BigNumber, string, boolean],
-      { tokenId: BigNumber; userAddress: string; passed: boolean }
+      { tokenId: BigNumber; contractAddress: string; passed: boolean }
     >;
 
     Created(
       tokenId?: null,
-      userAddress?: string | null,
+      contractAddress?: string | null,
       passed?: null
     ): TypedEventFilter<
       [BigNumber, string, boolean],
-      { tokenId: BigNumber; userAddress: string; passed: boolean }
+      { tokenId: BigNumber; contractAddress: string; passed: boolean }
     >;
 
     "MainContractSet(address)"(
@@ -367,8 +379,23 @@ export class VerificationPersonalToken extends BaseContract {
   };
 
   estimateGas: {
+    contractAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    contractTokenIds(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    contractTokens(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     create(
-      userAddress: string,
+      contractAddress: string,
       countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -377,20 +404,9 @@ export class VerificationPersonalToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<BigNumber>;
 
     modify(
-      userAddress: string,
-      countries: string,
+      contractAddress: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    personalTokenIds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    personalTokens(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     purge(
@@ -409,14 +425,27 @@ export class VerificationPersonalToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    users(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
     verify(target: string, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    contractAddresses(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    contractTokenIds(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    contractTokens(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     create(
-      userAddress: string,
+      contractAddress: string,
       countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -425,20 +454,9 @@ export class VerificationPersonalToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     modify(
-      userAddress: string,
-      countries: string,
+      contractAddress: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    personalTokenIds(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    personalTokens(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     purge(
@@ -455,11 +473,6 @@ export class VerificationPersonalToken extends BaseContract {
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    users(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     verify(

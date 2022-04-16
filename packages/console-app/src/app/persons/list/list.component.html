@@ -1,6 +1,6 @@
 <p>list works!</p>
 
-<mat-card *ngFor="let person of persons"
+<mat-card *ngFor="let person of persons$ | async"
   ><mat-card-header>
     <div mat-card-avatar></div>
     <mat-card-title>名前</mat-card-title>

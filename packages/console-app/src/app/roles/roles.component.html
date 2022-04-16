@@ -1,0 +1,12 @@
+<p>roles works!</p>
+
+<div class="register-item">
+  <mat-form-field appearance="legacy">
+    <mat-label>EVMアドレス</mat-label>
+    <input matInput placeholder="0x0..." [formControl]="address" />
+    <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+    <mat-error *ngIf="address.invalid">アドレス形式が間違っています</mat-error>
+  </mat-form-field>
+</div>
+
+<button mat-raised-button (click)="issue()">ロールを付与する</button>

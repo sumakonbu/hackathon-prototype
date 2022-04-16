@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ethers, providers, Signer } from 'ethers';
+import { solidityKeccak256 } from 'ethers/lib/utils';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { PersonalToken } from '../persons/type';
 import OracleAbis from './abis/Oracle.json';
 import { OracleAddress } from './constants';
+import { TransactionService } from './transaction.service';
 import { Oracle } from './types/Oracle';
 
 declare global {
@@ -15,14 +18,18 @@ declare global {
   providedIn: 'root',
 })
 export class MetamaskService {
+  // status
   isEthereumReady = false;
   currentNetwork = ''; // chainId
   accounts: string[] = [];
   currentAccount = ''; // address
 
+  // contract states
+  persons$ = new BehaviorSubject<PersonalToken[]>([]);
+
   private contract: Oracle;
 
-  constructor() {}
+  constructor(private transactionService: TransactionService) {}
 
   async connectToMetaMask(): Promise<void> {
     const ethereum = window.ethereum;
@@ -65,11 +72,10 @@ export class MetamaskService {
     if (!this.isEthereumReady) {
       throw new Error('Ethereum not ready!');
     }
-    return this.contract.createPersonalToken(
-      userAddress,
-      JSON.stringify(countries),
-      true
-    );
+    return this.contract
+      .createPersonalToken(userAddress, JSON.stringify(countries), true)
+      .then(this.handleTx)
+      .catch(this.handleError);
   }
 
   async listPersonalToken() {
@@ -93,7 +99,26 @@ export class MetamaskService {
         passed: token[3],
       };
     });
-    return list;
+    this.persons$.next(list);
+  }
+
+  grantRole(address: string) {
+    if (!this.isEthereumReady) {
+      throw new Error('Ethereum not ready!');
+    }
+
+    return this.contract
+      .grantRole(solidityKeccak256(['string'], ['MODERATOR_ROLE']), address)
+      .then(this.handleTx)
+      .catch(this.handleError);
+  }
+
+  purge() {
+    if (!this.isEthereumReady) {
+      throw new Error('Ethereum not ready!');
+    }
+
+    return this.contract.purge().then(this.handleTx).catch(this.handleError);
   }
 
   private setOracle() {
@@ -110,5 +135,36 @@ export class MetamaskService {
       OracleAbis,
       signer
     ) as Oracle;
+  }
+
+  private handleTx = (
+    tx: ethers.ContractTransaction
+  ): ethers.ContractTransaction => {
+    this.transactionService.addTx(tx.hash);
+    return tx;
+  };
+
+  private handleError(error: any): never {
+    if (
+      error.message.includes(
+        'MetaMask Tx Signature: User denied transaction signature'
+      )
+    ) {
+      throw new Error('取り止めました。');
+    }
+    if (!error.data || !error.data.message) {
+      throw new Error('不明なエラーが発生しました。。');
+    }
+
+    const message: string = error.data.message;
+    if (message.includes('User already exist!')) {
+      throw new Error('そのアドレスはすでに登録されています。');
+    } else if (message.includes('Contract already exist!')) {
+      throw new Error('そのアドレスはすでに登録されています。');
+    } else if (message.includes('AccessControl: account')) {
+      throw new Error('権限がありません。');
+    }
+
+    throw new Error('不明なエラーが発生しました。。');
   }
 }

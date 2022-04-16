@@ -22,18 +22,24 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface OracleInterface extends ethers.utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "createContractToken(address,string,bool)": FunctionFragment;
     "createPersonalToken(address,string,bool)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
     "getRoleMemberCount(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
+    "listContractToken()": FunctionFragment;
     "listPersonalToken()": FunctionFragment;
+    "modifyContractToken(address,bool)": FunctionFragment;
     "modifyPersonalToken(address,bool)": FunctionFragment;
+    "purge()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
+    "setVerificationContractToken(address)": FunctionFragment;
     "setVerificationPersonalToken(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "verificationContractTokenAddress()": FunctionFragment;
     "verificationPersonalTokenAddress()": FunctionFragment;
     "verify(address)": FunctionFragment;
   };
@@ -41,6 +47,10 @@ interface OracleInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "createContractToken",
+    values: [string, string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "createPersonalToken",
@@ -67,13 +77,22 @@ interface OracleInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "listContractToken",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "listPersonalToken",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "modifyContractToken",
+    values: [string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "modifyPersonalToken",
     values: [string, boolean]
   ): string;
+  encodeFunctionData(functionFragment: "purge", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, string]
@@ -81,6 +100,10 @@ interface OracleInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "revokeRole",
     values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setVerificationContractToken",
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "setVerificationPersonalToken",
@@ -91,6 +114,10 @@ interface OracleInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "verificationContractTokenAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "verificationPersonalTokenAddress",
     values?: undefined
   ): string;
@@ -98,6 +125,10 @@ interface OracleInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "createContractToken",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -119,24 +150,41 @@ interface OracleInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "listContractToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "listPersonalToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "modifyContractToken",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "modifyPersonalToken",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "purge", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "setVerificationContractToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setVerificationPersonalToken",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "verificationContractTokenAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -150,6 +198,7 @@ interface OracleInterface extends ethers.utils.Interface {
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
+    "VerificationContractTokenAddressSet(address)": EventFragment;
     "VerificationPersonalTokenAddressSet(address)": EventFragment;
   };
 
@@ -158,6 +207,9 @@ interface OracleInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(
+    nameOrSignatureOrTopic: "VerificationContractTokenAddressSet"
+  ): EventFragment;
+  getEvent(
     nameOrSignatureOrTopic: "VerificationPersonalTokenAddressSet"
   ): EventFragment;
 }
@@ -165,7 +217,7 @@ interface OracleInterface extends ethers.utils.Interface {
 export type MintedEvent = TypedEvent<
   [BigNumber, string, boolean] & {
     tokenId: BigNumber;
-    user: string;
+    userAddress: string;
     passed: boolean;
   }
 >;
@@ -184,6 +236,10 @@ export type RoleGrantedEvent = TypedEvent<
 
 export type RoleRevokedEvent = TypedEvent<
   [string, string, string] & { role: string; account: string; sender: string }
+>;
+
+export type VerificationContractTokenAddressSetEvent = TypedEvent<
+  [string] & { newAddress: string }
 >;
 
 export type VerificationPersonalTokenAddressSetEvent = TypedEvent<
@@ -236,8 +292,15 @@ export class Oracle extends BaseContract {
   functions: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
+    createContractToken(
+      contractAddress: string,
+      countries: string,
+      passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     createPersonalToken(
-      user: string,
+      userAddress: string,
       countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -268,11 +331,23 @@ export class Oracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    listContractToken(overrides?: CallOverrides): Promise<[string]>;
+
     listPersonalToken(overrides?: CallOverrides): Promise<[string]>;
 
-    modifyPersonalToken(
-      user: string,
+    modifyContractToken(
+      contractAddress: string,
       passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    modifyPersonalToken(
+      userAddress: string,
+      passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    purge(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -288,6 +363,11 @@ export class Oracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setVerificationContractToken(
+      _verificationContractToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setVerificationPersonalToken(
       _verificationPersonalToken: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -298,6 +378,10 @@ export class Oracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    verificationContractTokenAddress(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     verificationPersonalTokenAddress(
       overrides?: CallOverrides
     ): Promise<[string]>;
@@ -307,8 +391,15 @@ export class Oracle extends BaseContract {
 
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+  createContractToken(
+    contractAddress: string,
+    countries: string,
+    passed: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   createPersonalToken(
-    user: string,
+    userAddress: string,
     countries: string,
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -339,11 +430,23 @@ export class Oracle extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  listContractToken(overrides?: CallOverrides): Promise<string>;
+
   listPersonalToken(overrides?: CallOverrides): Promise<string>;
 
-  modifyPersonalToken(
-    user: string,
+  modifyContractToken(
+    contractAddress: string,
     passed: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  modifyPersonalToken(
+    userAddress: string,
+    passed: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  purge(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -359,6 +462,11 @@ export class Oracle extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setVerificationContractToken(
+    _verificationContractToken: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setVerificationPersonalToken(
     _verificationPersonalToken: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -369,6 +477,8 @@ export class Oracle extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  verificationContractTokenAddress(overrides?: CallOverrides): Promise<string>;
+
   verificationPersonalTokenAddress(overrides?: CallOverrides): Promise<string>;
 
   verify(target: string, overrides?: CallOverrides): Promise<boolean>;
@@ -376,8 +486,15 @@ export class Oracle extends BaseContract {
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+    createContractToken(
+      contractAddress: string,
+      countries: string,
+      passed: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     createPersonalToken(
-      user: string,
+      userAddress: string,
       countries: string,
       passed: boolean,
       overrides?: CallOverrides
@@ -408,13 +525,23 @@ export class Oracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    listContractToken(overrides?: CallOverrides): Promise<string>;
+
     listPersonalToken(overrides?: CallOverrides): Promise<string>;
 
-    modifyPersonalToken(
-      user: string,
+    modifyContractToken(
+      contractAddress: string,
       passed: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    modifyPersonalToken(
+      userAddress: string,
+      passed: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    purge(overrides?: CallOverrides): Promise<void>;
 
     renounceRole(
       role: BytesLike,
@@ -428,6 +555,11 @@ export class Oracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setVerificationContractToken(
+      _verificationContractToken: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setVerificationPersonalToken(
       _verificationPersonalToken: string,
       overrides?: CallOverrides
@@ -437,6 +569,10 @@ export class Oracle extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    verificationContractTokenAddress(
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     verificationPersonalTokenAddress(
       overrides?: CallOverrides
@@ -448,20 +584,20 @@ export class Oracle extends BaseContract {
   filters: {
     "Minted(uint256,address,bool)"(
       tokenId?: null,
-      user?: string | null,
+      userAddress?: string | null,
       passed?: null
     ): TypedEventFilter<
       [BigNumber, string, boolean],
-      { tokenId: BigNumber; user: string; passed: boolean }
+      { tokenId: BigNumber; userAddress: string; passed: boolean }
     >;
 
     Minted(
       tokenId?: null,
-      user?: string | null,
+      userAddress?: string | null,
       passed?: null
     ): TypedEventFilter<
       [BigNumber, string, boolean],
-      { tokenId: BigNumber; user: string; passed: boolean }
+      { tokenId: BigNumber; userAddress: string; passed: boolean }
     >;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(
@@ -518,6 +654,14 @@ export class Oracle extends BaseContract {
       { role: string; account: string; sender: string }
     >;
 
+    "VerificationContractTokenAddressSet(address)"(
+      newAddress?: string | null
+    ): TypedEventFilter<[string], { newAddress: string }>;
+
+    VerificationContractTokenAddressSet(
+      newAddress?: string | null
+    ): TypedEventFilter<[string], { newAddress: string }>;
+
     "VerificationPersonalTokenAddressSet(address)"(
       newAddress?: string | null
     ): TypedEventFilter<[string], { newAddress: string }>;
@@ -530,8 +674,15 @@ export class Oracle extends BaseContract {
   estimateGas: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    createContractToken(
+      contractAddress: string,
+      countries: string,
+      passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     createPersonalToken(
-      user: string,
+      userAddress: string,
       countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -565,11 +716,23 @@ export class Oracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    listContractToken(overrides?: CallOverrides): Promise<BigNumber>;
+
     listPersonalToken(overrides?: CallOverrides): Promise<BigNumber>;
 
-    modifyPersonalToken(
-      user: string,
+    modifyContractToken(
+      contractAddress: string,
       passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    modifyPersonalToken(
+      userAddress: string,
+      passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    purge(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -585,6 +748,11 @@ export class Oracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setVerificationContractToken(
+      _verificationContractToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setVerificationPersonalToken(
       _verificationPersonalToken: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -592,6 +760,10 @@ export class Oracle extends BaseContract {
 
     supportsInterface(
       interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    verificationContractTokenAddress(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -607,8 +779,15 @@ export class Oracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    createContractToken(
+      contractAddress: string,
+      countries: string,
+      passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     createPersonalToken(
-      user: string,
+      userAddress: string,
       countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -642,11 +821,23 @@ export class Oracle extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    listContractToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     listPersonalToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    modifyPersonalToken(
-      user: string,
+    modifyContractToken(
+      contractAddress: string,
       passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    modifyPersonalToken(
+      userAddress: string,
+      passed: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    purge(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -662,6 +853,11 @@ export class Oracle extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setVerificationContractToken(
+      _verificationContractToken: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setVerificationPersonalToken(
       _verificationPersonalToken: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -669,6 +865,10 @@ export class Oracle extends BaseContract {
 
     supportsInterface(
       interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    verificationContractTokenAddress(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
