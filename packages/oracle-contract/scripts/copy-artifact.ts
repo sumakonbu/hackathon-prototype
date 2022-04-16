@@ -16,6 +16,7 @@ const abiFiles = ["Oracle.json"];
 const typeFiles = [
   "Oracle.d.ts",
   "VerificationPersonalToken.d.ts",
+  "VerificationContractToken.d.ts",
   "common.d.ts",
 ];
 

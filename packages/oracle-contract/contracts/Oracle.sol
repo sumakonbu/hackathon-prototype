@@ -74,11 +74,7 @@ contract Oracle is AccessControlEnumerable {
      */
 
     // override AccessControlEnumerable
-    function grantRole(bytes32 role, address account)
-        public
-        override
-    // onlyRole(OWNER_ROLE)
-    {
+    function grantRole(bytes32 role, address account) public override {
         if (role == OWNER_ROLE) {
             _grantRole(OWNER_ROLE, account);
         } else if (role == MODERATOR_ROLE) {
@@ -137,7 +133,7 @@ contract Oracle is AccessControlEnumerable {
      * For debug only
      */
     function purge() public onlyRole(MODERATOR_ROLE) {
-        verificationPersonalToken.purge();
-        verificationContractToken.purge();
+        require(verificationPersonalToken.purge(), "PersonalToken failed.");
+        require(verificationContractToken.purge(), "ContractToken failed.");
     }
 }

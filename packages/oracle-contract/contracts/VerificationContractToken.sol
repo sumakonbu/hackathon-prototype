@@ -46,7 +46,7 @@ contract VerificationContractToken is OnlyMainContract {
         p.passed = passed;
         contractTokens[tokenId] = p;
 
-        // increment totalSupply
+        // increment
         totalSupply = totalSupply + 1;
         contractAddresses.push(contractAddress);
 
@@ -89,16 +89,17 @@ contract VerificationContractToken is OnlyMainContract {
     /**
      * For debug only
      */
-    function purge() public onlyMainContract {
+    function purge() public onlyMainContract returns (bool) {
         if (totalSupply == 0) {
-            return;
+            return true;
         }
-        
+
         for (uint256 i = 0; i < contractAddresses.length; i++) {
             address contractAddress = contractAddresses[i];
             contractTokenIds[contractAddress] = 0;
         }
         delete contractAddresses;
         totalSupply = 0;
+        return true;
     }
 }

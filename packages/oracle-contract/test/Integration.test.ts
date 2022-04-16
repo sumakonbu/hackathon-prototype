@@ -190,6 +190,8 @@ describe("Oracle", function () {
 
   describe("debug functions", function () {
     it("should be purged all data", async function () {
+      await expect(oracle.connect(deployer).purge()).to.be.ok;
+
       // create data
       await oracle
         .connect(deployer)

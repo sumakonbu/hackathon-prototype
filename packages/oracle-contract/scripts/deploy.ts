@@ -50,21 +50,28 @@ async function main() {
     .setVerificationPersonalToken(verificationPersonalToken.address);
   console.log(
     "Oracle setVerificationPersonalToken:",
-    setVerificationPersonalTokenResult
+    setVerificationPersonalTokenResult.hash
+  );
+  const setVerificationContractTokenResult = await oracle
+    .connect(signer)
+    .setVerificationContractToken(verificationContractToken.address);
+  console.log(
+    "Oracle setVerificationContractToken:",
+    setVerificationContractTokenResult.hash
   );
   const setMainContractAddressResult = await verificationPersonalToken
     .connect(signer)
     .setMainContractAddress(oracle.address);
   console.log(
     "verificationPersonalToken setMainContractAddressResult:",
-    setMainContractAddressResult
+    setMainContractAddressResult.hash
   );
   const setMainContractAddressResult2 = await verificationContractToken
     .connect(signer)
     .setMainContractAddress(oracle.address);
   console.log(
     "verificationContractToken setMainContractAddressResult:",
-    setMainContractAddressResult2
+    setMainContractAddressResult2.hash
   );
 }
 

@@ -39,7 +39,7 @@ contract VerificationPersonalToken is OnlyMainContract {
         p.passed = passed;
         personalTokens[tokenId] = p;
 
-        // increment totalSupply
+        // increment
         totalSupply = totalSupply + 1;
         users.push(userAddress);
 
@@ -83,9 +83,9 @@ contract VerificationPersonalToken is OnlyMainContract {
     /**
      * For debug only
      */
-    function purge() public onlyMainContract {
+    function purge() public onlyMainContract returns (bool) {
         if (totalSupply == 0) {
-            return;
+            return true;
         }
 
         for (uint256 i = 0; i < users.length; i++) {
@@ -94,5 +94,6 @@ contract VerificationPersonalToken is OnlyMainContract {
         }
         delete users;
         totalSupply = 0;
+        return true;
     }
 }
