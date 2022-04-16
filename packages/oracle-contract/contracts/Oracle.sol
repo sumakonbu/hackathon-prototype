@@ -118,9 +118,12 @@ contract Oracle is AccessControlEnumerable {
      */
 
     function verify(address target) public view returns (bool) {
-        require(verificationContractToken.verify(msg.sender), "Contract not verified!");
+        require(
+            verificationContractToken.verify(msg.sender),
+            "Contract not verified!"
+        );
         require(verificationPersonalToken.verify(target), "User not verified!");
-        
+
         return true;
     }
 }
