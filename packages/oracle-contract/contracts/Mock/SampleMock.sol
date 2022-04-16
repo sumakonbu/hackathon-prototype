@@ -10,7 +10,7 @@ contract SampleMock {
         oracle = Oracle(_oracleAddress);
     }
 
-    function exec(address userAddress) public {
+    function exec(address userAddress) public view {
         oracle.verify(userAddress);
     }
 }

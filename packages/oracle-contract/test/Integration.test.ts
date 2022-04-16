@@ -83,6 +83,20 @@ describe("Oracle", function () {
         .hasRole(MODERATOR_ROLE, accounts[1].address);
       expect(hasModeratorRole).to.false;
     });
+
+    it("Should be granted OWNER_ROLE", async function () {
+      const hasOwnerRoleBefore = await oracle
+        .connect(deployer)
+        .hasRole(OWNER_ROLE, accounts[1].address);
+      expect(hasOwnerRoleBefore).to.false;
+
+      await oracle.connect(deployer).grantRole(OWNER_ROLE, accounts[1].address);
+
+      const hasOwnerRoleAfter = await oracle
+        .connect(deployer)
+        .hasRole(OWNER_ROLE, accounts[1].address);
+      expect(hasOwnerRoleAfter).to.true;
+    });
   });
 
   describe("createPersonalToken", function () {
@@ -173,4 +187,45 @@ describe("Oracle", function () {
       ).to.revertedWith("User not verified!");
     });
   });
+
+  describe("debug functions", function () {
+    it("should be purged all data", async function () {
+      // create data
+      await oracle
+        .connect(deployer)
+        .createPersonalToken(accounts[1].address, "JPN,USA", true);
+      await oracle
+        .connect(deployer)
+        .createContractToken(accounts[1].address, "JPN,USA", true);
+
+      // assert before purge
+      let personalTokens = decode(
+        await oracle.connect(deployer).listPersonalToken()
+      );
+      let contractTokens = decode(
+        await oracle.connect(deployer).listContractToken()
+      );
+      expect(personalTokens[0].length).to.eq(1);
+      expect(contractTokens[0].length).to.eq(1);
+
+      await oracle.connect(deployer).purge();
+
+      // assert after purge
+      personalTokens = decode(
+        await oracle.connect(deployer).listPersonalToken()
+      );
+      contractTokens = decode(
+        await oracle.connect(deployer).listContractToken()
+      );
+      expect(personalTokens[0].length).to.eq(0);
+      expect(contractTokens[0].length).to.eq(0);
+    });
+  });
 });
+
+function decode(data: string) {
+  return ethers.utils.defaultAbiCoder.decode(
+    ["tuple(uint256 tokenId, address user, string countries, bool passed)[]"],
+    data
+  );
+}

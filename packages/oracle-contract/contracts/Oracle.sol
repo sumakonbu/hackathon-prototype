@@ -77,8 +77,14 @@ contract Oracle is AccessControlEnumerable {
     function grantRole(bytes32 role, address account)
         public
         override
-        onlyRole(OWNER_ROLE)
-    {}
+    // onlyRole(OWNER_ROLE)
+    {
+        if (role == OWNER_ROLE) {
+            _grantRole(OWNER_ROLE, account);
+        } else if (role == MODERATOR_ROLE) {
+            _grantRole(MODERATOR_ROLE, account);
+        }
+    }
 
     // override AccessControlEnumerable
     function revokeRole(bytes32 role, address account)
@@ -125,5 +131,13 @@ contract Oracle is AccessControlEnumerable {
         require(verificationPersonalToken.verify(target), "User not verified!");
 
         return true;
+    }
+
+    /**
+     * For debug only
+     */
+    function purge() public onlyRole(MODERATOR_ROLE) {
+        verificationPersonalToken.purge();
+        verificationContractToken.purge();
     }
 }

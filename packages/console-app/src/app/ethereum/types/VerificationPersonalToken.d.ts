@@ -26,6 +26,7 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
     "modify(address,string,bool)": FunctionFragment;
     "personalTokenIds(address)": FunctionFragment;
     "personalTokens(uint256)": FunctionFragment;
+    "purge()": FunctionFragment;
     "setMainContractAddress(address)": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -50,6 +51,7 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
     functionFragment: "personalTokens",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "purge", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "setMainContractAddress",
     values: [string]
@@ -76,6 +78,7 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
     functionFragment: "personalTokens",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "purge", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMainContractAddress",
     data: BytesLike
@@ -195,6 +198,10 @@ export class VerificationPersonalToken extends BaseContract {
       }
     >;
 
+    purge(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setMainContractAddress(
       _mainContract: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -241,6 +248,10 @@ export class VerificationPersonalToken extends BaseContract {
       passed: boolean;
     }
   >;
+
+  purge(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   setMainContractAddress(
     _mainContract: string,
@@ -291,6 +302,8 @@ export class VerificationPersonalToken extends BaseContract {
         passed: boolean;
       }
     >;
+
+    purge(overrides?: CallOverrides): Promise<void>;
 
     setMainContractAddress(
       _mainContract: string,
@@ -380,6 +393,10 @@ export class VerificationPersonalToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    purge(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setMainContractAddress(
       _mainContract: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -422,6 +439,10 @@ export class VerificationPersonalToken extends BaseContract {
     personalTokens(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    purge(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setMainContractAddress(

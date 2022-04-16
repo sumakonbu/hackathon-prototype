@@ -79,4 +79,20 @@ contract VerificationPersonalToken is OnlyMainContract {
 
         return personalTokens[tokenId].passed;
     }
+
+    /**
+     * For debug only
+     */
+    function purge() public onlyMainContract {
+        if (totalSupply == 0) {
+            return;
+        }
+
+        for (uint256 i = 0; i < users.length; i++) {
+            address userAddress = users[i];
+            personalTokenIds[userAddress] = 0;
+        }
+        delete users;
+        totalSupply = 0;
+    }
 }

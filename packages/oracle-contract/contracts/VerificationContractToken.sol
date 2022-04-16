@@ -85,4 +85,20 @@ contract VerificationContractToken is OnlyMainContract {
 
         return contractTokens[tokenId].passed;
     }
+
+    /**
+     * For debug only
+     */
+    function purge() public onlyMainContract {
+        if (totalSupply == 0) {
+            return;
+        }
+        
+        for (uint256 i = 0; i < contractAddresses.length; i++) {
+            address contractAddress = contractAddresses[i];
+            contractTokenIds[contractAddress] = 0;
+        }
+        delete contractAddresses;
+        totalSupply = 0;
+    }
 }

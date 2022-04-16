@@ -33,6 +33,17 @@ async function main() {
     verificationPersonalToken.address
   );
 
+  // Deploy VerificationContractToken
+  const VerificationContractToken = await ethers.getContractFactory(
+    "VerificationContractToken"
+  );
+  const verificationContractToken = await VerificationContractToken.deploy();
+  await verificationContractToken.deployed();
+  console.log(
+    "VerificationContractToken deployed to:",
+    verificationContractToken.address
+  );
+
   // After work
   const setVerificationPersonalTokenResult = await oracle
     .connect(signer)
@@ -47,6 +58,13 @@ async function main() {
   console.log(
     "verificationPersonalToken setMainContractAddressResult:",
     setMainContractAddressResult
+  );
+  const setMainContractAddressResult2 = await verificationContractToken
+    .connect(signer)
+    .setMainContractAddress(oracle.address);
+  console.log(
+    "verificationContractToken setMainContractAddressResult:",
+    setMainContractAddressResult2
   );
 }
 
