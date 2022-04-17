@@ -1,14 +1,14 @@
 import React from "react";
 import "./App.css";
-import { StakingButton } from "./components/Staking";
+import { StakeButton } from "./components/StakeButton";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
         <h1>Awesome App</h1>
-        <p>Now APY 1000%!</p>
-        <StakingButton />
+        <p>Current APY 10000%!</p>
+        <StakeButton />
       </header>
     </div>
   );

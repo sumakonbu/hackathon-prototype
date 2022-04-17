@@ -7,7 +7,7 @@ const contractAddress = false
   ? "0x764Fc1d4D7128e4e385276057a4E63E69da760fb" // testnet
   : "0xe2800053B600643a4fAb2B5E06c057e9f1270766"; // localhost
 
-export function StakingButton() {
+export function StakeButton() {
   const [errorMessage, setErrorMessage] = useState("");
 
   async function exec() {
@@ -30,5 +30,5 @@ export function StakingButton() {
     console.log(result.hash);
   }
 
-  return <button onClick={exec}>staking now!</button>;
+  return <button onClick={exec}>stake now!</button>;
 }
