@@ -1,0 +1,6 @@
+[
+  "constructor(address)",
+  "function exec() returns (bool)",
+  "function oracleAddress() view returns (address)",
+  "function setOracle(address)"
+]
