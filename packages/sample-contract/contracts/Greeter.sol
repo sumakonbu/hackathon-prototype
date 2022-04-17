@@ -4,19 +4,23 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract Greeter {
-    string private greeting;
+    address public oracleAddress;
 
-    constructor(string memory _greeting) {
-        console.log("Deploying a Greeter with greeting:", _greeting);
-        greeting = _greeting;
+    constructor(address _oracleAddress) {
+        oracleAddress = _oracleAddress;
     }
 
-    function greet() public view returns (string memory) {
-        return greeting;
+    function exec() public returns (bool) {
+        bytes memory payload = abi.encodeWithSignature("verify(address)", msg.sender);
+        (bool success, bytes memory returnData) = address(oracleAddress).call(payload);
+        require(success, "To call verify failed!");
+        (bool verified) = abi.decode(returnData, (bool));
+        require(verified, "Verification failed!");
+
+        return true;
     }
 
-    function setGreeting(string memory _greeting) public {
-        console.log("Changing greeting from '%s' to '%s'", greeting, _greeting);
-        greeting = _greeting;
+    function setOracle(address _oracleAddress) public {
+        oracleAddress = _oracleAddress;
     }
 }

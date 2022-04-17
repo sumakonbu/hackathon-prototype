@@ -4,8 +4,11 @@ import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "hardhat-abi-exporter";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+
+import { privateKey } from "../../../private.json";
 
 dotenv.config();
 
@@ -26,10 +29,15 @@ const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks:{
     local: {
-      url: 'http://localhost:9933',
+      url: "http://localhost:9933",
       chainId: 4369,
-      accounts:[privateKey]
-    }
+      accounts: [privateKey],
+    },
+    shibuya: {
+      url: "https://rpc.shibuya.astar.network:8545",
+      chainId: 81,
+      accounts: [privateKey],
+    },
   },
   abiExporter: {
     path: "./abis",
