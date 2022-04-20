@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { ethers } from "ethers";
+import { Alert, Close } from "theme-ui";
 
 import abis from "../abis/Greeter.json";
+import { TransactionContext } from "../context";
 
 const contractAddress = false
-  ? "0x764Fc1d4D7128e4e385276057a4E63E69da760fb" // testnet
-  : "0xe2800053B600643a4fAb2B5E06c057e9f1270766"; // localhost
+  ? "0xCE7533bB5469114e934463B59EC44dd9f13B5596" // testnet
+  : "0xffA143Ed468F6bE2Acc7C2253144166BdC7Ca3Be"; // localhost
 
 export function StakeButton() {
+  const { setHash } = useContext(TransactionContext);
   const [errorMessage, setErrorMessage] = useState("");
 
   async function exec() {
@@ -26,9 +29,49 @@ export function StakeButton() {
     const contract = new ethers.Contract(contractAddress, abis, signer);
     console.log("contract", contractAddress);
 
-    const result = await contract.exec();
-    console.log(result.hash);
+    try {
+      const result = await contract.exec();
+      console.log(result.hash);
+      setHash(result.hash);
+    } catch (error) {
+      const message =
+        ((error as any).data as any).message ??
+        (error as Error).message ??
+        "不明なエラーが発生しました";
+      if (message.includes("Contract not verified!")) {
+        setErrorMessage("このコントラクトは検証されていません。");
+      } else if (message.includes("User not verified!")) {
+        setErrorMessage("このアドレスは検証されていません。");
+      } else if (
+        message.includes(
+          "MetaMask Tx Signature: User denied transaction signature"
+        )
+      ) {
+        setErrorMessage(""); // pass through
+      } else {
+        setErrorMessage(message);
+      }
+    }
   }
 
-  return <button onClick={exec}>stake now!</button>;
+  return (
+    <>
+      <button onClick={exec}>stake now!</button>
+      {errorMessage.length > 0 && (
+        <Alert
+          variant="accent"
+          mb={2}
+          style={{
+            color: "white",
+            fontSize: "16px",
+            backgroundColor: "red",
+            marginTop: "20px",
+          }}
+        >
+          {errorMessage}
+          <Close onClick={() => setErrorMessage("")} />
+        </Alert>
+      )}
+    </>
+  );
 }
