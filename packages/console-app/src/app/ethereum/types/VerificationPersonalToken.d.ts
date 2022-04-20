@@ -21,7 +21,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
   functions: {
-    "create(address,string,bool)": FunctionFragment;
+    "create(address,string[3],bool)": FunctionFragment;
     "list()": FunctionFragment;
     "modify(address,string,bool)": FunctionFragment;
     "personalTokenIds(address)": FunctionFragment;
@@ -31,12 +31,12 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
     "totalSupply()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "users(uint256)": FunctionFragment;
-    "verify(address)": FunctionFragment;
+    "verify(address,string[3])": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "create",
-    values: [string, string, boolean]
+    values: [string, [string, string, string], boolean]
   ): string;
   encodeFunctionData(functionFragment: "list", values?: undefined): string;
   encodeFunctionData(
@@ -65,7 +65,10 @@ interface VerificationPersonalTokenInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "users", values: [BigNumberish]): string;
-  encodeFunctionData(functionFragment: "verify", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "verify",
+    values: [string, [string, string, string]]
+  ): string;
 
   decodeFunctionResult(functionFragment: "create", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "list", data: BytesLike): Result;
@@ -167,7 +170,7 @@ export class VerificationPersonalToken extends BaseContract {
   functions: {
     create(
       userAddress: string,
-      countries: string,
+      countries: [string, string, string],
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -190,10 +193,9 @@ export class VerificationPersonalToken extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, string, string, boolean] & {
+      [BigNumber, string, boolean] & {
         tokenId: BigNumber;
         userAddress: string;
-        countries: string;
         passed: boolean;
       }
     >;
@@ -216,12 +218,22 @@ export class VerificationPersonalToken extends BaseContract {
 
     users(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
-    verify(target: string, overrides?: CallOverrides): Promise<[boolean]>;
+    verify(
+      target: string,
+      countries: [string, string, string],
+      overrides?: CallOverrides
+    ): Promise<
+      [boolean, boolean, boolean] & {
+        isExisted: boolean;
+        isMatched: boolean;
+        isPassed: boolean;
+      }
+    >;
   };
 
   create(
     userAddress: string,
-    countries: string,
+    countries: [string, string, string],
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -241,10 +253,9 @@ export class VerificationPersonalToken extends BaseContract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, string, string, boolean] & {
+    [BigNumber, string, boolean] & {
       tokenId: BigNumber;
       userAddress: string;
-      countries: string;
       passed: boolean;
     }
   >;
@@ -267,12 +278,22 @@ export class VerificationPersonalToken extends BaseContract {
 
   users(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  verify(target: string, overrides?: CallOverrides): Promise<boolean>;
+  verify(
+    target: string,
+    countries: [string, string, string],
+    overrides?: CallOverrides
+  ): Promise<
+    [boolean, boolean, boolean] & {
+      isExisted: boolean;
+      isMatched: boolean;
+      isPassed: boolean;
+    }
+  >;
 
   callStatic: {
     create(
       userAddress: string,
-      countries: string,
+      countries: [string, string, string],
       passed: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -295,10 +316,9 @@ export class VerificationPersonalToken extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, string, string, boolean] & {
+      [BigNumber, string, boolean] & {
         tokenId: BigNumber;
         userAddress: string;
-        countries: string;
         passed: boolean;
       }
     >;
@@ -319,7 +339,17 @@ export class VerificationPersonalToken extends BaseContract {
 
     users(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    verify(target: string, overrides?: CallOverrides): Promise<boolean>;
+    verify(
+      target: string,
+      countries: [string, string, string],
+      overrides?: CallOverrides
+    ): Promise<
+      [boolean, boolean, boolean] & {
+        isExisted: boolean;
+        isMatched: boolean;
+        isPassed: boolean;
+      }
+    >;
   };
 
   filters: {
@@ -369,7 +399,7 @@ export class VerificationPersonalToken extends BaseContract {
   estimateGas: {
     create(
       userAddress: string,
-      countries: string,
+      countries: [string, string, string],
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -411,13 +441,17 @@ export class VerificationPersonalToken extends BaseContract {
 
     users(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    verify(target: string, overrides?: CallOverrides): Promise<BigNumber>;
+    verify(
+      target: string,
+      countries: [string, string, string],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     create(
       userAddress: string,
-      countries: string,
+      countries: [string, string, string],
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -464,6 +498,7 @@ export class VerificationPersonalToken extends BaseContract {
 
     verify(
       target: string,
+      countries: [string, string, string],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

@@ -68,12 +68,23 @@ export class MetamaskService {
     this.setOracle();
   }
 
-  registerPersonalToken(userAddress: string, countries: string[]) {
+  /**
+   * Personal Token
+   */
+  registerPersonalToken(
+    userAddress: string,
+    countries: [string, string, string]
+  ) {
     if (!this.isEthereumReady) {
       throw new Error('Ethereum not ready!');
     }
+
+    const filledCountries: [string, string, string] = [...countries];
+    while (filledCountries.length < 3) {
+      filledCountries.push('');
+    }
     return this.contract
-      .createPersonalToken(userAddress, JSON.stringify(countries), true)
+      .createPersonalToken(userAddress, filledCountries, true)
       .then(this.handleTx)
       .catch(this.handleError);
   }
@@ -86,7 +97,9 @@ export class MetamaskService {
     // parse
     const data = await this.contract.listPersonalToken();
     const decode = ethers.utils.defaultAbiCoder.decode(
-      ['tuple(uint256 tokenId, address user, string countries, bool passed)[]'],
+      [
+        'tuple(uint256 tokenId, address user, array(string, string, string), bool passed)[]',
+      ],
       data
     );
 
@@ -95,11 +108,32 @@ export class MetamaskService {
       return {
         tokenId: token[0].toNumber(),
         user: token[1],
-        countries: JSON.parse(token[2]),
+        countries: token[2].filter((val) => val),
         passed: token[3],
       };
     });
     this.persons$.next(list);
+  }
+
+  /**
+   * Contract Token
+   */
+  registerContractToken(
+    userAddress: string,
+    countries: [string, string, string]
+  ) {
+    if (!this.isEthereumReady) {
+      throw new Error('Ethereum not ready!');
+    }
+
+    const filledCountries: [string, string, string] = [...countries];
+    while (filledCountries.length < 3) {
+      filledCountries.push('');
+    }
+    return this.contract
+      .createContractToken(userAddress, filledCountries, true)
+      .then(this.handleTx)
+      .catch(this.handleError);
   }
 
   grantRole(address: string) {

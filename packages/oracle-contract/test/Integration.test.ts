@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { solidityKeccak256 } from "ethers/lib/utils";
@@ -18,6 +19,8 @@ describe("Oracle", function () {
   let verificationPersonalToken: VerificationPersonalToken;
   let verificationContractToken: VerificationContractToken;
   let sampleMock: SampleMock;
+
+  const defaultCountries: [string, string, string] = ["JPN", "USA", ""];
 
   const OWNER_ROLE = solidityKeccak256(["string"], ["OWNER_ROLE"]);
   const MODERATOR_ROLE = solidityKeccak256(["string"], ["MODERATOR_ROLE"]);
@@ -103,18 +106,18 @@ describe("Oracle", function () {
     it("Should call correctly", async function () {
       const txResult = await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[1].address, "JPN,USA", true);
+        .createPersonalToken(accounts[1].address, defaultCountries, true);
       expect(txResult.hash).to.be.ok;
     });
 
     it("Should revert with 'User already exist!'", async function () {
       await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[2].address, "JPN,USA", true);
+        .createPersonalToken(accounts[2].address, defaultCountries, true);
       await expect(
         oracle
           .connect(deployer)
-          .createPersonalToken(accounts[2].address, "JPN,USA", true)
+          .createPersonalToken(accounts[2].address, defaultCountries, true)
       ).to.revertedWith("User already exist!");
     });
 
@@ -123,7 +126,7 @@ describe("Oracle", function () {
       await expect(
         oracle
           .connect(accountWithoutModeratorRole)
-          .createPersonalToken(accounts[2].address, "JPN,USA", true)
+          .createPersonalToken(accounts[2].address, defaultCountries, true)
       ).to.revertedWith("AccessControl: account");
     });
   });
@@ -132,18 +135,18 @@ describe("Oracle", function () {
     it("Should call correctly", async function () {
       const txResult = await oracle
         .connect(deployer)
-        .createContractToken(accounts[1].address, "JPN,USA", true);
+        .createContractToken(accounts[1].address, defaultCountries, true);
       expect(txResult.hash).to.be.ok;
     });
 
     it("Should revert with 'Contract already exist!'", async function () {
       await oracle
         .connect(deployer)
-        .createContractToken(accounts[2].address, "JPN,USA", true);
+        .createContractToken(accounts[2].address, defaultCountries, true);
       await expect(
         oracle
           .connect(deployer)
-          .createContractToken(accounts[2].address, "JPN,USA", true)
+          .createContractToken(accounts[2].address, defaultCountries, true)
       ).to.revertedWith("Contract already exist!");
     });
 
@@ -152,7 +155,7 @@ describe("Oracle", function () {
       await expect(
         oracle
           .connect(accountWithoutModeratorRole)
-          .createContractToken(accounts[2].address, "JPN,USA", true)
+          .createContractToken(accounts[2].address, defaultCountries, true)
       ).to.revertedWith("AccessControl: account");
     });
   });
@@ -162,15 +165,23 @@ describe("Oracle", function () {
       // Prepare verified address.
       await oracle
         .connect(deployer)
-        .createContractToken(sampleMock.address, "JPN,USA", true);
+        .createContractToken(sampleMock.address, defaultCountries, true);
       await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[1].address, "JPN", true);
+        .createPersonalToken(accounts[1].address, ["JPN", "", ""], true);
+      await oracle
+        .connect(deployer)
+        .createPersonalToken(accounts[2].address, ["", "", "RUS"], true);
+      await oracle
+        .connect(deployer)
+        .createPersonalToken(accounts[3].address, ["", "USA", ""], false);
     });
 
     it("Should be executed correctly", async function () {
-      await expect(sampleMock.connect(deployer).exec(accounts[1].address)).to.be
-        .ok;
+      const result = await sampleMock
+        .connect(deployer)
+        .exec(accounts[1].address);
+      expect(result).to.be.true;
     });
 
     it("Should be reverted with 'Contract not verified!'", async function () {
@@ -180,8 +191,22 @@ describe("Oracle", function () {
       ).to.revertedWith("Contract not verified!");
     });
 
-    it("Should be reverted with 'User not verified!'", async function () {
+    it("Should be reverted with 'User not registerd!'", async function () {
+      const notVerifiedUser = accounts[0].address;
+      await expect(
+        sampleMock.connect(deployer).exec(notVerifiedUser)
+      ).to.revertedWith("User not registerd!");
+    });
+
+    it("Should be reverted with 'User not allowed!'", async function () {
       const notVerifiedUser = accounts[2].address;
+      await expect(
+        sampleMock.connect(deployer).exec(notVerifiedUser)
+      ).to.revertedWith("User not allowed!");
+    });
+
+    it("Should be reverted with 'User not verified!'", async function () {
+      const notVerifiedUser = accounts[3].address;
       await expect(
         sampleMock.connect(deployer).exec(notVerifiedUser)
       ).to.revertedWith("User not verified!");
@@ -195,10 +220,10 @@ describe("Oracle", function () {
       // create data
       await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[1].address, "JPN,USA", true);
+        .createPersonalToken(accounts[1].address, defaultCountries, true);
       await oracle
         .connect(deployer)
-        .createContractToken(accounts[1].address, "JPN,USA", true);
+        .createContractToken(accounts[1].address, defaultCountries, true);
 
       // assert before purge
       let personalTokens = decode(

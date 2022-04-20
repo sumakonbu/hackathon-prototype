@@ -8,7 +8,7 @@ contract VerificationPersonalToken is OnlyMainContract {
     struct PersonalToken {
         uint256 tokenId;
         address userAddress;
-        string countries;
+        string[3] countries;
         bool passed;
     }
     address[] public users;
@@ -23,7 +23,7 @@ contract VerificationPersonalToken is OnlyMainContract {
 
     function create(
         address userAddress,
-        string memory countries,
+        string[3] memory countries,
         bool passed
     ) public onlyMainContract {
         require(personalTokenIds[userAddress] == 0, "User already exist!");
@@ -64,20 +64,39 @@ contract VerificationPersonalToken is OnlyMainContract {
         return (abi.encode(personalTokenSet));
     }
 
-    function verify(address target)
+    function verify(address target, string[3] memory countries)
         public
         view
         onlyMainContract
-        returns (bool)
+        returns (
+            bool isExisted,
+            bool isMatched,
+            bool isPassed
+        )
     {
         // Verify
         uint256 tokenId = personalTokenIds[target];
         if (tokenId == 0) {
             // token doesn't exist.
-            return false;
+            return (false, false, false);
         }
 
-        return personalTokens[tokenId].passed;
+        string[3] memory contractCountries = countries;
+        string[3] memory personCountries = personalTokens[tokenId].countries;
+        for (uint256 i = 0; i < personCountries.length; i++) {
+            for (uint256 j = 0; j < contractCountries.length; j++) {
+                if (
+                    keccak256(bytes(contractCountries[j])) !=
+                    keccak256(bytes("")) &&
+                    keccak256(bytes(contractCountries[j])) ==
+                    keccak256(bytes(personCountries[i]))
+                ) {
+                    return (true, true, personalTokens[tokenId].passed);
+                }
+            }
+        }
+
+        return (true, false, personalTokens[tokenId].passed);
     }
 
     /**

@@ -8,7 +8,7 @@ contract VerificationContractToken is OnlyMainContract {
     struct ContractToken {
         uint256 tokenId;
         address contractAddress;
-        string countries;
+        string[3] countries;
         bool passed;
     }
     address[] public contractAddresses;
@@ -27,7 +27,7 @@ contract VerificationContractToken is OnlyMainContract {
 
     function create(
         address contractAddress,
-        string memory countries,
+        string[3] memory countries,
         bool passed
     ) public onlyMainContract {
         require(
@@ -74,16 +74,19 @@ contract VerificationContractToken is OnlyMainContract {
         public
         view
         onlyMainContract
-        returns (bool)
+        returns (bool, string[3] memory)
     {
         // Verify
         uint256 tokenId = contractTokenIds[target];
         if (tokenId == 0) {
             // token doesn't exist.
-            return false;
+            return (false, ["", "", ""]);
         }
 
-        return contractTokens[tokenId].passed;
+        return (
+            contractTokens[tokenId].passed,
+            contractTokens[tokenId].countries
+        );
     }
 
     /**

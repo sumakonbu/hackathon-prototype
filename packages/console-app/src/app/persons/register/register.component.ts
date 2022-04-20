@@ -39,7 +39,7 @@ export class RegisterComponent {
     this.id = this.personsStoreService.add({
       firstName: this.firstName.value,
       familyName: this.familyName.value,
-      countries: this.countries.value,
+      countries: [...this.countries.value],
       passed: true, // initial value
       tokenId: -1, // initial value
       ethAddress: '', // initial value
@@ -48,7 +48,11 @@ export class RegisterComponent {
   }
 
   async issue() {
-    if (this.id === -1 || this.address.invalid) {
+    if (this.id === -1) {
+      this.messageService.error('先に登録してください。');
+      return;
+    }
+    if (this.address.invalid) {
       this.messageService.error('入力が正しくありません。');
       return;
     }
