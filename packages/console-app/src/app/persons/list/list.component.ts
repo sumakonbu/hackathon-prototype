@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MetamaskService } from 'src/app/ethereum/metamask.service';
+import { countryList } from 'src/app/shared/constans';
 import { MessageService } from 'src/app/shared/message.service';
-import { PersonalToken } from '../type';
+import { PersonsStoreService } from '../persons-store.service';
 
 @Component({
   selector: 'app-list',
@@ -9,11 +10,12 @@ import { PersonalToken } from '../type';
   styleUrls: ['./list.component.scss'],
 })
 export class ListComponent implements OnInit {
-  persons$ = this.metamaskService.persons$.asObservable();
+  persons$ = this.personsStoreService.persons$.asObservable();
 
   constructor(
     private readonly messageService: MessageService,
-    private readonly metamaskService: MetamaskService
+    private readonly metamaskService: MetamaskService,
+    private readonly personsStoreService: PersonsStoreService
   ) {}
 
   async ngOnInit() {
@@ -24,5 +26,11 @@ export class ListComponent implements OnInit {
       return;
     }
     this.metamaskService.listPersonalToken();
+  }
+
+  translate(countries: string[]) {
+    return countries
+      .map((country) => countryList.find((val) => val.code === country).name)
+      .join(' ');
   }
 }

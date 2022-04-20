@@ -24,6 +24,9 @@ export class DebugComponent {
     try {
       const result = await this.metamaskService.purge();
       this.messageService.info(`txを発行しました! ${result.hash}`);
+
+      localStorage.removeItem('persons');
+      localStorage.removeItem('contracts');
     } catch (error) {
       this.messageService.error(error.message);
     }

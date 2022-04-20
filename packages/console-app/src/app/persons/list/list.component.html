@@ -1,12 +1,14 @@
-<p>list works!</p>
+<p *ngIf="(persons$ | async).length === 0">0件です</p>
 
 <mat-card *ngFor="let person of persons$ | async"
   ><mat-card-header>
-    <div mat-card-avatar></div>
-    <mat-card-title>名前</mat-card-title>
-    <mat-card-subtitle>{{ person.user }}</mat-card-subtitle>
+    <div mat-card-avatar class="avatar-image"></div>
+    <mat-card-title
+      >{{ person.familyName }} {{ person.firstName }}</mat-card-title
+    >
+    <mat-card-subtitle>{{ person.ethAddress }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    {{ person.countries }}
+    {{ translate(person.countries) }}
   </mat-card-content>
 </mat-card>

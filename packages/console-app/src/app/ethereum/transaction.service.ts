@@ -23,30 +23,36 @@ export class TransactionService {
     this.loading$.next(true);
 
     const timeId = setInterval(async () => {
-      if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const txes = this.hashes.map((hash) =>
-          provider.getTransactionReceipt(hash)
-        );
-        const receipts = await Promise.all(txes);
-        receipts.forEach((receipt) => {
-          if (receipt) {
-            this.hashes = this.hashes.filter(
-              (hash) => hash !== receipt.transactionHash
-            );
-            this._snackBar.open(
-              `txが完了しました! ${receipt.transactionHash}`,
-              'ok',
-              {
-                horizontalPosition: 'right',
-                verticalPosition: 'top',
-              }
-            );
-          }
-        });
+      if (!window.ethereum) {
+        return;
       }
 
-      // end
+      // Call tx to ethereum
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const txes = this.hashes.map((hash) =>
+        provider.getTransactionReceipt(hash)
+      );
+      const receipts = await Promise.all(txes);
+
+      // Check whether to complete.
+      receipts.forEach((receipt) => {
+        // Block completed if having receipt.
+        if (receipt) {
+          this.hashes = this.hashes.filter(
+            (hash) => hash !== receipt.transactionHash
+          );
+          this._snackBar.open(
+            `txが完了しました! ${receipt.transactionHash}`,
+            'ok',
+            {
+              horizontalPosition: 'right',
+              verticalPosition: 'top',
+            }
+          );
+        }
+      });
+
+      // Judge end
       if (this.hashes.length === 0) {
         this.loading$.next(false);
         clearInterval(timeId);
