@@ -13,7 +13,14 @@ contract Greeter {
     function exec() public returns (bool) {
         bytes memory payload = abi.encodeWithSignature("verify(address)", msg.sender);
         (bool success, bytes memory returnData) = address(oracleAddress).call(payload);
-        require(success, "To call verify failed!");
+        if (success == false) {
+            assembly {
+                let ptr := mload(0x40)
+                let size := returndatasize()
+                returndatacopy(ptr, 0, size)
+                revert(ptr, size)
+            }
+        }
         (bool verified) = abi.decode(returnData, (bool));
         require(verified, "Verification failed!");
 
