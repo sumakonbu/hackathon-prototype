@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ContractService } from 'src/app/ethereum/contract.service';
 import { MetamaskService } from 'src/app/ethereum/metamask.service';
 import { countryList } from 'src/app/shared/constans';
 import { MessageService } from 'src/app/shared/message.service';
@@ -15,6 +16,7 @@ export class ListComponent implements OnInit {
   constructor(
     private readonly messageService: MessageService,
     private readonly metamaskService: MetamaskService,
+    private readonly contractService: ContractService,
     private readonly personsStoreService: PersonsStoreService
   ) {}
 
@@ -25,7 +27,7 @@ export class ListComponent implements OnInit {
       this.messageService.error(error.message);
       return;
     }
-    this.metamaskService.listPersonalToken();
+    this.contractService.listPersonalToken();
   }
 
   translate(countries: string[]) {

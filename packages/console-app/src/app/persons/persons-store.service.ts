@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { ContractService } from '../ethereum/contract.service';
 import { MetamaskService } from '../ethereum/metamask.service';
 import { PersonalInfo } from './type';
 
@@ -11,7 +12,10 @@ export class PersonsStoreService {
 
   private subscription: Subscription;
 
-  constructor(private readonly metamaskService: MetamaskService) {}
+  constructor(
+    private readonly metamaskService: MetamaskService,
+    private readonly contractService: ContractService
+  ) {}
 
   init() {
     const persons = localStorage.getItem('persons');
@@ -19,7 +23,7 @@ export class PersonsStoreService {
       this.persons$.next(JSON.parse(persons));
     }
 
-    this.subscription = this.metamaskService.persons$
+    this.subscription = this.contractService.persons$
       .asObservable()
       .subscribe((persons) => {
         // Update persons$

@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { ContractService } from 'src/app/ethereum/contract.service';
 import { MetamaskService } from 'src/app/ethereum/metamask.service';
 import { countryList } from 'src/app/shared/constans';
 import { addressValidator } from 'src/app/shared/function';
@@ -23,6 +24,7 @@ export class RegisterComponent {
   constructor(
     private readonly messageService: MessageService,
     private readonly metamaskService: MetamaskService,
+    private readonly contractService: ContractService,
     private readonly personsStoreService: PersonsStoreService
   ) {}
 
@@ -70,11 +72,13 @@ export class RegisterComponent {
     }
 
     try {
-      const result = await this.metamaskService.registerPersonalToken(
+      const result = await this.contractService.registerPersonalToken(
         this.address.value,
         this.countries.value
       );
-      this.messageService.info(`txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`);
+      this.messageService.info(
+        `txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`
+      );
     } catch (error) {
       this.messageService.error(error.message);
       return;

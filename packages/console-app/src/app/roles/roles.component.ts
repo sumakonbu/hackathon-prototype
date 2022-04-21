@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { ContractService } from '../ethereum/contract.service';
 import { MetamaskService } from '../ethereum/metamask.service';
 import { addressValidator } from '../shared/function';
 import { MessageService } from '../shared/message.service';
@@ -14,7 +15,8 @@ export class RolesComponent {
 
   constructor(
     private readonly messageService: MessageService,
-    private readonly metamaskService: MetamaskService
+    private readonly metamaskService: MetamaskService,
+    private readonly contractService: ContractService
   ) {}
 
   async issue() {
@@ -31,8 +33,10 @@ export class RolesComponent {
     }
 
     try {
-      const result = await this.metamaskService.grantRole(this.address.value);
-      this.messageService.info(`txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`);
+      const result = await this.contractService.grantRole(this.address.value);
+      this.messageService.info(
+        `txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`
+      );
     } catch (error) {
       this.messageService.error(error.message);
       return;
