@@ -35,10 +35,10 @@ export class MetamaskService {
     const ethereum = window.ethereum;
 
     if (!ethereum) {
-      throw new Error('MetaMask is not installed!');
+      throw new Error('MetaMaskをインストールしてください');
     }
     if (!ethereum.isMetaMask) {
-      throw new Error('It is not MetaMask!');
+      throw new Error('MetaMaskをインストールしてください');
     }
 
     try {
@@ -60,7 +60,7 @@ export class MetamaskService {
 
     this.currentNetwork = (ethereum as any).networkVersion;
     if (!(this.currentNetwork === '81' || this.currentNetwork === '4369')) {
-      throw new Error('Change to Shibuya network!');
+      throw new Error('ネットワークをShibuyaに変えてください');
     }
 
     // It's OK

@@ -30,7 +30,7 @@ export class DebugComponent {
 
     try {
       const result = await this.metamaskService.purge();
-      this.messageService.info(`txを発行しました! ${result.hash}`);
+      this.messageService.info(`txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`);
 
       localStorage.removeItem('persons');
       localStorage.removeItem('contracts');
@@ -57,7 +57,7 @@ export class DebugComponent {
         this.address.value,
         this.countries.value
       );
-      // this.messageService.info(`txを発行しました! ${result.hash}`);
+      this.messageService.info(`txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`);
     } catch (error) {
       this.messageService.error(error.message);
       return;

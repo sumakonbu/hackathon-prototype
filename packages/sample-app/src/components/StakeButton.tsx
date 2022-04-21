@@ -11,14 +11,14 @@ const contractAddress = {
 };
 
 export function StakeButton() {
-  const { setHash } = useContext(TransactionContext);
+  const { hash, setHash } = useContext(TransactionContext);
   const [errorMessage, setErrorMessage] = useState("");
 
   async function exec() {
     const ethereum = (window as any).ethereum;
     if (!ethereum || !ethereum.isMetaMask) {
       console.log("Need to install MetaMask");
-      setErrorMessage("Please install MetaMask browser extension to interact");
+      setErrorMessage("MetaMaskをインストールしてください");
       return;
     }
 
@@ -28,7 +28,8 @@ export function StakeButton() {
 
     const currentNetwork = (ethereum as any).networkVersion;
     if (!(currentNetwork === "81" || currentNetwork === "4369")) {
-      throw new Error("Change to Shibuya network!");
+      setErrorMessage("ネットワークをShibuyaに変えてください");
+      return;
     }
 
     const signer = new ethers.providers.Web3Provider(ethereum).getSigner();
@@ -71,6 +72,19 @@ export function StakeButton() {
   return (
     <>
       <button onClick={exec}>stake now!</button>
+      {hash.length > 0 && (
+        <Alert
+          mb={2}
+          style={{
+            color: "white",
+            fontSize: "16px",
+            marginTop: "20px",
+          }}
+        >
+          Txを発行しました!ブロック取り込みまでしばらくお待ちください。 {hash}
+          <Close onClick={() => setErrorMessage("")} />
+        </Alert>
+      )}
       {errorMessage.length > 0 && (
         <Alert
           variant="accent"
