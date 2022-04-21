@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ContractsComponent } from './contracts/contracts.component';
 import { DebugComponent } from './debug/debug.component';
 import { MenuComponent } from './menu/menu.component';
 import { PersonsComponent } from './persons/persons.component';
@@ -10,6 +11,10 @@ const routes: Routes = [
   {
     path: 'persons',
     component: PersonsComponent,
+  },
+  {
+    path: 'contracts',
+    component: ContractsComponent,
   },
   {
     path: 'roles',

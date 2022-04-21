@@ -42,31 +42,4 @@ export class DebugComponent {
       this.messageService.error(error.message);
     }
   }
-
-  async issue() {
-    if (this.address.invalid) {
-      this.messageService.error('入力が正しくありません。');
-      return;
-    }
-
-    try {
-      await this.metamaskService.connectToMetaMask();
-    } catch (error: any) {
-      this.messageService.error(error.message);
-      return;
-    }
-
-    try {
-      const result = await this.contractService.registerContractToken(
-        this.address.value,
-        this.countries.value
-      );
-      this.messageService.info(
-        `txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`
-      );
-    } catch (error) {
-      this.messageService.error(error.message);
-      return;
-    }
-  }
 }

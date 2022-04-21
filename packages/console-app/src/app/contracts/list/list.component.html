@@ -1,0 +1,12 @@
+<p *ngIf="(contracts$ | async).length === 0">0件です</p>
+
+<mat-card *ngFor="let contract of contracts$ | async"
+  ><mat-card-header>
+    <div mat-card-avatar class="avatar-image"></div>
+    <mat-card-title>{{ contract.appName }} {{ contract.url }}</mat-card-title>
+    <mat-card-subtitle>{{ contract.ethAddress }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    {{ translate(contract.countries) }}
+  </mat-card-content>
+</mat-card>

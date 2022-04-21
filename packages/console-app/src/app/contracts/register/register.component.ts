@@ -5,17 +5,17 @@ import { MetamaskService } from 'src/app/ethereum/metamask.service';
 import { countryList } from 'src/app/shared/constans';
 import { addressValidator } from 'src/app/shared/function';
 import { MessageService } from 'src/app/shared/message.service';
-import { PersonsStoreService } from '../persons-store.service';
+import { ContractsStoreService } from '../contracts-store.service';
 
 @Component({
-  selector: 'app-persons-register',
+  selector: 'app-contracts-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class PersonsRegisterComponent {
+export class ContractsRegisterComponent {
   @Input() id = -1;
-  firstName = new FormControl('', [Validators.required]);
-  familyName = new FormControl('', [Validators.required]);
+  appName = new FormControl('', [Validators.required]);
+  url = new FormControl('', []);
   address = new FormControl('', [Validators.required, addressValidator]);
   countries = new FormControl('', [Validators.required]);
 
@@ -25,22 +25,18 @@ export class PersonsRegisterComponent {
     private readonly messageService: MessageService,
     private readonly metamaskService: MetamaskService,
     private readonly contractService: ContractService,
-    private readonly personsStoreService: PersonsStoreService
+    private readonly contractsStoreService: ContractsStoreService
   ) {}
 
   register() {
-    if (
-      this.firstName.invalid ||
-      this.familyName.invalid ||
-      this.countries.invalid
-    ) {
+    if (this.appName.invalid || this.countries.invalid) {
       this.messageService.error('入力が正しくありません。');
       return;
     }
 
-    this.id = this.personsStoreService.add({
-      firstName: this.firstName.value,
-      familyName: this.familyName.value,
+    this.id = this.contractsStoreService.add({
+      appName: this.appName.value,
+      url: this.url.value,
       countries: [...this.countries.value],
       passed: true, // initial value
       tokenId: -1, // initial value
@@ -59,7 +55,7 @@ export class PersonsRegisterComponent {
       return;
     }
 
-    this.personsStoreService.updateEthAddress({
+    this.contractsStoreService.updateEthAddress({
       id: this.id,
       ethAddress: this.address.value,
     });
@@ -72,7 +68,7 @@ export class PersonsRegisterComponent {
     }
 
     try {
-      const result = await this.contractService.registerPersonalToken(
+      const result = await this.contractService.registerContractToken(
         this.address.value,
         this.countries.value
       );

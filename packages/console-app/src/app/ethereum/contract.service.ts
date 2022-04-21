@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ethers, providers } from 'ethers';
 import { solidityKeccak256 } from 'ethers/lib/utils';
 import { BehaviorSubject } from 'rxjs';
+import { ContractToken } from '../contracts/type';
 import { PersonalToken } from '../persons/type';
 import OracleAbis from './abis/Oracle.json';
 import { OracleAddress } from './constants';
@@ -23,6 +24,7 @@ export class ContractService {
 
   // contract states
   persons$ = new BehaviorSubject<PersonalToken[]>([]);
+  contracts$ = new BehaviorSubject<ContractToken[]>([]);
 
   private contract: Oracle;
 
@@ -51,12 +53,12 @@ export class ContractService {
       throw new Error('Ethereum not ready!');
     }
 
-    const filledCountries: [string, string, string] = [...countries];
-    while (filledCountries.length < 3) {
-      filledCountries.push('');
-    }
     return this.contract
-      .createPersonalToken(userAddress, filledCountries, true)
+      .createPersonalToken(
+        userAddress,
+        this.transformFixedLengthArray(countries),
+        true
+      )
       .then(this.handleTx)
       .catch(this.handleError);
   }
@@ -91,21 +93,47 @@ export class ContractService {
    * Contract Token
    */
   registerContractToken(
-    userAddress: string,
+    contractAddress: string,
     countries: [string, string, string]
   ) {
     if (!this.isEthereumReady) {
       throw new Error('Ethereum not ready!');
     }
 
-    const filledCountries: [string, string, string] = [...countries];
-    while (filledCountries.length < 3) {
-      filledCountries.push('');
-    }
     return this.contract
-      .createContractToken(userAddress, filledCountries, true)
+      .createContractToken(
+        contractAddress,
+        this.transformFixedLengthArray(countries),
+        true
+      )
       .then(this.handleTx)
       .catch(this.handleError);
+  }
+
+  async listContractToken() {
+    if (!this.isEthereumReady) {
+      throw new Error('Ethereum not ready!');
+    }
+
+    // parse
+    const data = await this.contract.listContractToken();
+    const decode = ethers.utils.defaultAbiCoder.decode(
+      [
+        'tuple(uint256 tokenId, address contract, array(string, string, string), bool passed)[]',
+      ],
+      data
+    );
+
+    // map
+    const list: ContractToken[] = decode[0].map((token) => {
+      return {
+        tokenId: token[0].toNumber(),
+        contract: token[1],
+        countries: token[2].filter((val) => val),
+        passed: token[3],
+      };
+    });
+    this.contracts$.next(list);
   }
 
   /**
@@ -159,5 +187,13 @@ export class ContractService {
     }
 
     throw new Error('不明なエラーが発生しました。。');
+  }
+
+  private transformFixedLengthArray(countries: [string, string, string]) {
+    const filledCountries: [string, string, string] = [...countries];
+    while (filledCountries.length < 3) {
+      filledCountries.push('');
+    }
+    return filledCountries;
   }
 }
