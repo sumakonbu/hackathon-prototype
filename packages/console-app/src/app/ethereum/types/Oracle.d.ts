@@ -22,8 +22,8 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface OracleInterface extends ethers.utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
-    "createContractToken(address,string[3],bool)": FunctionFragment;
-    "createPersonalToken(address,string[3],bool)": FunctionFragment;
+    "createContractToken(address,string,bool)": FunctionFragment;
+    "createPersonalToken(address,string,bool)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
     "getRoleMemberCount(bytes32)": FunctionFragment;
@@ -50,11 +50,11 @@ interface OracleInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createContractToken",
-    values: [string, [string, string, string], boolean]
+    values: [string, string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "createPersonalToken",
-    values: [string, [string, string, string], boolean]
+    values: [string, string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
@@ -294,14 +294,14 @@ export class Oracle extends BaseContract {
 
     createContractToken(
       contractAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     createPersonalToken(
       userAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -393,14 +393,14 @@ export class Oracle extends BaseContract {
 
   createContractToken(
     contractAddress: string,
-    countries: [string, string, string],
+    countries: string,
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   createPersonalToken(
     userAddress: string,
-    countries: [string, string, string],
+    countries: string,
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -488,14 +488,14 @@ export class Oracle extends BaseContract {
 
     createContractToken(
       contractAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
     createPersonalToken(
       userAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -676,14 +676,14 @@ export class Oracle extends BaseContract {
 
     createContractToken(
       contractAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     createPersonalToken(
       userAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -781,14 +781,14 @@ export class Oracle extends BaseContract {
 
     createContractToken(
       contractAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     createPersonalToken(
       userAddress: string,
-      countries: [string, string, string],
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

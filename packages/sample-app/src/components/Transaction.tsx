@@ -10,29 +10,31 @@ export function Transaction() {
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
+    if (hash.length === 0) {
+      return;
+    }
+
     let timerId = 0;
     let counter = 0;
-    if (hash.length > 0) {
-      timerId = window.setInterval(async () => {
-        const ethereum = (window as any).ethereum;
-        if (!ethereum) {
-          return;
-        }
+    timerId = window.setInterval(async () => {
+      const ethereum = (window as any).ethereum;
+      if (!ethereum) {
+        return;
+      }
 
-        // Call tx to ethereum
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const receipt = await provider.getTransactionReceipt(hash);
-        // Block completed if having receipt.
-        if (receipt) {
-          setFinished(true);
-          setHash("");
-          clearInterval(timerId);
-        }
+      // Call tx to ethereum
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const receipt = await provider.getTransactionReceipt(hash);
+      // Block completed if having receipt.
+      if (receipt) {
+        setFinished(true);
+        setHash("");
+        clearInterval(timerId);
+      }
 
-        counter = counter < 10 ? counter + 1 : 1;
-        setProgress(counter);
-      }, 1000);
-    }
+      counter = counter < 10 ? counter + 1 : 1;
+      setProgress(counter);
+    }, 1000);
   }, [hash]);
 
   return (

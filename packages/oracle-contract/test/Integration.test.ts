@@ -20,7 +20,7 @@ describe("Oracle", function () {
   let verificationContractToken: VerificationContractToken;
   let sampleMock: SampleMock;
 
-  const defaultCountries: [string, string, string] = ["JPN", "USA", ""];
+  const defaultCountries: string = "011"; // JPN, USA
 
   const OWNER_ROLE = solidityKeccak256(["string"], ["OWNER_ROLE"]);
   const MODERATOR_ROLE = solidityKeccak256(["string"], ["MODERATOR_ROLE"]);
@@ -168,13 +168,13 @@ describe("Oracle", function () {
         .createContractToken(sampleMock.address, defaultCountries, true);
       await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[1].address, ["JPN", "", ""], true);
+        .createPersonalToken(accounts[1].address, "001", true);
       await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[2].address, ["", "", "RUS"], true);
+        .createPersonalToken(accounts[2].address, "100", true);
       await oracle
         .connect(deployer)
-        .createPersonalToken(accounts[3].address, ["", "USA", ""], false);
+        .createPersonalToken(accounts[3].address, "010", false);
     });
 
     it("Should be executed correctly", async function () {

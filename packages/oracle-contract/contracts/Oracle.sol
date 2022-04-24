@@ -33,7 +33,7 @@ contract Oracle is AccessControlEnumerable {
 
     function createPersonalToken(
         address userAddress,
-        string[3] memory countries,
+        string memory countries,
         bool passed
     ) public onlyRole(MODERATOR_ROLE) {
         verificationPersonalToken.create(userAddress, countries, passed);
@@ -54,7 +54,7 @@ contract Oracle is AccessControlEnumerable {
 
     function createContractToken(
         address contractAddress,
-        string[3] memory countries,
+        string memory countries,
         bool passed
     ) public onlyRole(MODERATOR_ROLE) {
         verificationContractToken.create(contractAddress, countries, passed);
@@ -120,7 +120,7 @@ contract Oracle is AccessControlEnumerable {
      */
 
     function verify(address target) public view returns (bool) {
-        (bool passed, string[3] memory countries) = verificationContractToken
+        (bool passed, string memory countries) = verificationContractToken
             .verify(msg.sender);
         require(passed, "Contract not verified!");
         (

@@ -45,20 +45,13 @@ export class ContractService {
   /**
    * Personal Token
    */
-  registerPersonalToken(
-    userAddress: string,
-    countries: [string, string, string]
-  ) {
+  registerPersonalToken(userAddress: string, countries: string[]) {
     if (!this.isEthereumReady) {
       throw new Error('Ethereum not ready!');
     }
 
     return this.contract
-      .createPersonalToken(
-        userAddress,
-        this.transformFixedLengthArray(countries),
-        true
-      )
+      .createPersonalToken(userAddress, this.encodeCountries(countries), true)
       .then(this.handleTx)
       .catch(this.handleError);
   }
@@ -71,9 +64,7 @@ export class ContractService {
     // parse
     const data = await this.contract.listPersonalToken();
     const decode = ethers.utils.defaultAbiCoder.decode(
-      [
-        'tuple(uint256 tokenId, address user, array(string, string, string), bool passed)[]',
-      ],
+      ['tuple(uint256 tokenId, address user, string countries, bool passed)[]'],
       data
     );
 
@@ -82,7 +73,7 @@ export class ContractService {
       return {
         tokenId: token[0].toNumber(),
         user: token[1],
-        countries: token[2].filter((val) => val),
+        countries: this.decodeCountries(token[2]),
         passed: token[3],
       };
     });
@@ -103,7 +94,7 @@ export class ContractService {
     return this.contract
       .createContractToken(
         contractAddress,
-        this.transformFixedLengthArray(countries),
+        this.encodeCountries(countries),
         true
       )
       .then(this.handleTx)
@@ -119,7 +110,7 @@ export class ContractService {
     const data = await this.contract.listContractToken();
     const decode = ethers.utils.defaultAbiCoder.decode(
       [
-        'tuple(uint256 tokenId, address contract, array(string, string, string), bool passed)[]',
+        'tuple(uint256 tokenId, address contract, string countries, bool passed)[]',
       ],
       data
     );
@@ -129,7 +120,7 @@ export class ContractService {
       return {
         tokenId: token[0].toNumber(),
         contract: token[1],
-        countries: token[2].filter((val) => val),
+        countries: this.decodeCountries(token[2]),
         passed: token[3],
       };
     });
@@ -189,11 +180,28 @@ export class ContractService {
     throw new Error('不明なエラーが発生しました。。');
   }
 
-  private transformFixedLengthArray(countries: [string, string, string]) {
-    const filledCountries: [string, string, string] = [...countries];
-    while (filledCountries.length < 3) {
-      filledCountries.push('');
-    }
-    return filledCountries;
+  // Now specification is that 'RUS-USA-JPN' changes to '111'.
+  // Ordering is fixed.
+  private encodeCountries(countries: string[]) {
+    let convertedCountries: string;
+
+    convertedCountries =
+      +countries.findIndex((country) => country === 'JPN') > -1 ? '1' : '0';
+    convertedCountries =
+      +countries.findIndex((country) => country === 'USA') > -1 ? '1' : '0';
+    convertedCountries =
+      +countries.findIndex((country) => country === 'RUS') > -1 ? '1' : '0';
+
+    return convertedCountries;
+  }
+
+  private decodeCountries(countries: string) {
+    let convertedCountries: string[] = [];
+
+    countries[0] === '1' && convertedCountries.push('JPN');
+    countries[1] === '1' && convertedCountries.push('USA');
+    countries[2] === '1' && convertedCountries.push('RUS');
+
+    return convertedCountries;
   }
 }

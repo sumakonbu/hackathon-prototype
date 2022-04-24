@@ -8,7 +8,7 @@ contract VerificationPersonalToken is OnlyMainContract {
     struct PersonalToken {
         uint256 tokenId;
         address userAddress;
-        string[3] countries;
+        string countries; // 000 - 111
         bool passed;
     }
     address[] public users;
@@ -23,7 +23,7 @@ contract VerificationPersonalToken is OnlyMainContract {
 
     function create(
         address userAddress,
-        string[3] memory countries,
+        string memory countries,
         bool passed
     ) public onlyMainContract {
         require(personalTokenIds[userAddress] == 0, "User already exist!");
@@ -64,7 +64,7 @@ contract VerificationPersonalToken is OnlyMainContract {
         return (abi.encode(personalTokenSet));
     }
 
-    function verify(address target, string[3] memory countries)
+    function verify(address target, string memory countries)
         public
         view
         onlyMainContract
@@ -81,18 +81,11 @@ contract VerificationPersonalToken is OnlyMainContract {
             return (false, false, false);
         }
 
-        string[3] memory contractCountries = countries;
-        string[3] memory personCountries = personalTokens[tokenId].countries;
+        bytes memory contractCountries = bytes(countries);
+        bytes memory personCountries = bytes(personalTokens[tokenId].countries);
         for (uint256 i = 0; i < personCountries.length; i++) {
-            for (uint256 j = 0; j < contractCountries.length; j++) {
-                if (
-                    keccak256(bytes(contractCountries[j])) !=
-                    keccak256(bytes("")) &&
-                    keccak256(bytes(contractCountries[j])) ==
-                    keccak256(bytes(personCountries[i]))
-                ) {
-                    return (true, true, personalTokens[tokenId].passed);
-                }
+            if (personCountries[i] == contractCountries[i]) {
+                return (true, true, personalTokens[tokenId].passed);
             }
         }
 

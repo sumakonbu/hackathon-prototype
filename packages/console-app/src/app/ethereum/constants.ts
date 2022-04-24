@@ -1,6 +1,6 @@
 export const OracleAddress = {
-  local: '0x19CDb49180591a5b421B1b63307E9602c0a11092',
-  shibuya: '0x83Ef2Ac2397382835C17b2C9c7A35E5DA48E3eC0',
+  local: '0x6fE930f8Fb8Ff8d79014c249D0647820ceBA1E60',
+  shibuya: '0xE10184c03BA03bC377fcDcEa73fBB9bFaFDd21b0',
 };
 
 export const explorerUrl = {
