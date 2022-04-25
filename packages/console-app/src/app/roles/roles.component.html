@@ -8,4 +8,9 @@
   </mat-form-field>
 </div>
 
-<button mat-raised-button (click)="issue()">ロールを付与する</button>
+<button mat-raised-button class="button" (click)="grant()">
+  ロールを付与する
+</button>
+<button mat-raised-button class="button" (click)="revoke()">
+  ロールを取り消す
+</button>

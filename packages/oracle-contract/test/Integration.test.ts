@@ -100,6 +100,24 @@ describe("Oracle", function () {
         .hasRole(OWNER_ROLE, accounts[1].address);
       expect(hasOwnerRoleAfter).to.true;
     });
+
+    it("Should be revoked OWNER_ROLE", async function () {
+      await oracle.connect(deployer).grantRole(OWNER_ROLE, accounts[1].address);
+
+      const hasOwnerRoleBefore = await oracle
+        .connect(deployer)
+        .hasRole(OWNER_ROLE, accounts[1].address);
+      expect(hasOwnerRoleBefore).to.true;
+
+      await oracle
+        .connect(deployer)
+        .revokeRole(OWNER_ROLE, accounts[1].address);
+
+      const hasOwnerRoleAfter = await oracle
+        .connect(deployer)
+        .hasRole(OWNER_ROLE, accounts[1].address);
+      expect(hasOwnerRoleAfter).to.false;
+    });
   });
 
   describe("createPersonalToken", function () {

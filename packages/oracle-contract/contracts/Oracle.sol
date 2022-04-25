@@ -74,6 +74,7 @@ contract Oracle is AccessControlEnumerable {
      */
 
     // override AccessControlEnumerable
+    // CAUTION: Unrestricted roles for ease of debugging
     function grantRole(bytes32 role, address account) public override {
         if (role == OWNER_ROLE) {
             _grantRole(OWNER_ROLE, account);
@@ -87,7 +88,13 @@ contract Oracle is AccessControlEnumerable {
         public
         override
         onlyRole(OWNER_ROLE)
-    {}
+    {
+        if (role == OWNER_ROLE) {
+            _revokeRole(OWNER_ROLE, account);
+        } else if (role == MODERATOR_ROLE) {
+            _revokeRole(MODERATOR_ROLE, account);
+        }
+    }
 
     function setVerificationPersonalToken(address _verificationPersonalToken)
         public

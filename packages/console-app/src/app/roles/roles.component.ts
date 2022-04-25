@@ -19,7 +19,15 @@ export class RolesComponent {
     private readonly contractService: ContractService
   ) {}
 
-  async issue() {
+  grant() {
+    this.exec('grant');
+  }
+
+  revoke() {
+    this.exec('revoke');
+  }
+
+  private async exec(type: 'grant' | 'revoke') {
     if (this.address.invalid) {
       this.messageService.error('入力が正しくありません。');
       return;
@@ -33,7 +41,10 @@ export class RolesComponent {
     }
 
     try {
-      const result = await this.contractService.grantRole(this.address.value);
+      const result =
+        type === 'grant'
+          ? await this.contractService.grantRole(this.address.value)
+          : await this.contractService.revokeRole(this.address.value);
       this.messageService.info(
         `txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`
       );

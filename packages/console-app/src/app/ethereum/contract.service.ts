@@ -141,6 +141,17 @@ export class ContractService {
       .catch(this.handleError);
   }
 
+  revokeRole(address: string) {
+    if (!this.isEthereumReady) {
+      throw new Error('Ethereum not ready!');
+    }
+
+    return this.contract
+      .revokeRole(solidityKeccak256(['string'], ['MODERATOR_ROLE']), address)
+      .then(this.handleTx)
+      .catch(this.handleError);
+  }
+
   purge() {
     if (!this.isEthereumReady) {
       throw new Error('Ethereum not ready!');

@@ -29,10 +29,10 @@ export class TransactionService {
 
       // Call tx to ethereum
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const txes = this.hashes.map((hash) =>
+      const txs = this.hashes.map((hash) =>
         provider.getTransactionReceipt(hash)
       );
-      const receipts = await Promise.all(txes);
+      const receipts = await Promise.all(txs);
 
       // Check whether to complete.
       receipts.forEach((receipt) => {

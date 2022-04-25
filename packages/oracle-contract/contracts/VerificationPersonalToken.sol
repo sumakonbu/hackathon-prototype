@@ -28,10 +28,8 @@ contract VerificationPersonalToken is OnlyMainContract {
     ) public onlyMainContract {
         require(personalTokenIds[userAddress] == 0, "User already exist!");
 
+        // Create token
         uint256 tokenId = totalSupply + 1;
-
-        personalTokenIds[userAddress] = tokenId;
-
         PersonalToken memory p;
         p.tokenId = tokenId;
         p.userAddress = userAddress;
@@ -39,9 +37,12 @@ contract VerificationPersonalToken is OnlyMainContract {
         p.passed = passed;
         personalTokens[tokenId] = p;
 
+        // to make enumerable
+        personalTokenIds[userAddress] = tokenId;
+        users.push(userAddress);
+
         // increment
         totalSupply = totalSupply + 1;
-        users.push(userAddress);
 
         emit Created(tokenId, userAddress, passed);
     }

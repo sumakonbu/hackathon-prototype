@@ -35,10 +35,8 @@ contract VerificationContractToken is OnlyMainContract {
             "Contract already exist!"
         );
 
+        // Create token
         uint256 tokenId = totalSupply + 1;
-
-        contractTokenIds[contractAddress] = tokenId;
-
         ContractToken memory p;
         p.tokenId = tokenId;
         p.contractAddress = contractAddress;
@@ -46,9 +44,12 @@ contract VerificationContractToken is OnlyMainContract {
         p.passed = passed;
         contractTokens[tokenId] = p;
 
+        // to make enumerable
+        contractTokenIds[contractAddress] = tokenId;
+        contractAddresses.push(contractAddress);
+
         // increment
         totalSupply = totalSupply + 1;
-        contractAddresses.push(contractAddress);
 
         emit Created(tokenId, contractAddress, passed);
     }
