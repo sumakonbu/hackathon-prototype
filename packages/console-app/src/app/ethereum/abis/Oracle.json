@@ -16,7 +16,7 @@
   "function hasRole(bytes32,address) view returns (bool)",
   "function listContractToken() view returns (bytes)",
   "function listPersonalToken() view returns (bytes)",
-  "function modifyContractToken(address,bool)",
+  "function modifyContractToken(uint256,address,string,bool)",
   "function modifyPersonalToken(address,bool)",
   "function purge()",
   "function renounceRole(bytes32,address)",

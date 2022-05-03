@@ -1,10 +1,19 @@
-<mat-tab-group mat-align-tabs="center">
+<mat-tab-group
+  mat-align-tabs="center"
+  [(selectedIndex)]="selectedIndex"
+  (selectedTabChange)="changeTab($event.index)"
+>
   <mat-tab label="リスト"
     ><div class="tab-body-wrapper">
-      <app-contracts-list></app-contracts-list></div
+      <app-contracts-list
+        (modificationSelected)="modificationSelected($event)"
+      ></app-contracts-list></div
   ></mat-tab>
-  <mat-tab label="新規登録"
+  <mat-tab [label]="editMode === 'register' ? '新規登録' : '編集'"
     ><div class="tab-body-wrapper">
-      <app-contracts-register></app-contracts-register></div
+      <app-contracts-register
+        [mode]="editMode"
+        [token]="token"
+      ></app-contracts-register></div
   ></mat-tab>
 </mat-tab-group>

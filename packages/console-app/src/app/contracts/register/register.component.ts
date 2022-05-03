@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ContractService } from 'src/app/ethereum/contract.service';
 import { MetamaskService } from 'src/app/ethereum/metamask.service';
@@ -6,14 +6,16 @@ import { countryList } from 'src/app/shared/constans';
 import { addressValidator } from 'src/app/shared/function';
 import { MessageService } from 'src/app/shared/message.service';
 import { ContractsStoreService } from '../contracts-store.service';
+import { ContractInfo, EditMode } from '../type';
 
 @Component({
   selector: 'app-contracts-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class ContractsRegisterComponent {
-  @Input() id = -1;
+export class ContractsRegisterComponent implements OnChanges {
+  @Input() mode: EditMode = 'register';
+  @Input() token = { id: -1 } as ContractInfo;
   appName = new FormControl('', [Validators.required]);
   url = new FormControl('', []);
   address = new FormControl('', [Validators.required, addressValidator]);
@@ -28,13 +30,27 @@ export class ContractsRegisterComponent {
     private readonly contractsStoreService: ContractsStoreService
   ) {}
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['mode'].currentValue === 'register') {
+      this.appName.reset();
+      this.url.reset();
+      this.address.reset();
+      this.countries.reset();
+    } else if (changes['mode'].currentValue === 'edit') {
+      this.appName.setValue(this.token.appName);
+      this.url.setValue(this.token.url);
+      this.address.setValue(this.token.ethAddress);
+      this.countries.setValue(this.token.countries);
+    }
+  }
+
   register() {
     if (this.appName.invalid || this.countries.invalid) {
       this.messageService.error('入力が正しくありません。');
       return;
     }
 
-    this.id = this.contractsStoreService.add({
+    this.token.id = this.contractsStoreService.add({
       appName: this.appName.value,
       url: this.url.value,
       countries: [...this.countries.value],
@@ -46,17 +62,22 @@ export class ContractsRegisterComponent {
   }
 
   async issue() {
-    if (this.id === -1) {
+    if (this.token.id === -1) {
       this.messageService.error('先に登録してください。');
       return;
     }
-    if (this.address.invalid) {
+    if (this.mode === 'register' && this.address.invalid) {
       this.messageService.error('入力が正しくありません。');
       return;
     }
 
-    this.contractsStoreService.updateEthAddress({
-      id: this.id,
+    this.contractsStoreService.updateToken({
+      id: this.token.id,
+      appName: this.appName.value,
+      url: this.url.value,
+      countries: this.countries.value,
+      passed: true,
+      tokenId: this.mode === 'register' ? undefined : this.token.id,
       ethAddress: this.address.value,
     });
 
@@ -68,10 +89,17 @@ export class ContractsRegisterComponent {
     }
 
     try {
-      const result = await this.contractService.registerContractToken(
-        this.address.value,
-        this.countries.value
-      );
+      const result =
+        this.mode === 'register'
+          ? await this.contractService.registerContractToken(
+              this.address.value,
+              this.countries.value
+            )
+          : await this.contractService.modifyContractToken(
+              this.token.id,
+              this.address.value,
+              this.countries.value
+            );
       this.messageService.info(
         `txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`
       );

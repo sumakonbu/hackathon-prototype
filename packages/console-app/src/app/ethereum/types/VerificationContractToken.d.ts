@@ -26,7 +26,7 @@ interface VerificationContractTokenInterface extends ethers.utils.Interface {
     "contractTokens(uint256)": FunctionFragment;
     "create(address,string,bool)": FunctionFragment;
     "list()": FunctionFragment;
-    "modify(address,bool)": FunctionFragment;
+    "modify(uint256,address,string,bool)": FunctionFragment;
     "purge()": FunctionFragment;
     "setMainContractAddress(address)": FunctionFragment;
     "totalSupply()": FunctionFragment;
@@ -53,7 +53,7 @@ interface VerificationContractTokenInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "list", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "modify",
-    values: [string, boolean]
+    values: [BigNumberish, string, string, boolean]
   ): string;
   encodeFunctionData(functionFragment: "purge", values?: undefined): string;
   encodeFunctionData(
@@ -101,26 +101,38 @@ interface VerificationContractTokenInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "verify", data: BytesLike): Result;
 
   events: {
-    "Created(uint256,address,bool)": EventFragment;
+    "Created(uint256,address,string,bool)": EventFragment;
     "MainContractSet(address)": EventFragment;
+    "Modified(uint256,address,string,bool)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Created"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MainContractSet"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Modified"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
 
 export type CreatedEvent = TypedEvent<
-  [BigNumber, string, boolean] & {
+  [BigNumber, string, string, boolean] & {
     tokenId: BigNumber;
     contractAddress: string;
+    countries: string;
     passed: boolean;
   }
 >;
 
 export type MainContractSetEvent = TypedEvent<
   [string] & { newAddress: string }
+>;
+
+export type ModifiedEvent = TypedEvent<
+  [BigNumber, string, string, boolean] & {
+    tokenId: BigNumber;
+    contractAddress: string;
+    countries: string;
+    passed: boolean;
+  }
 >;
 
 export type OwnershipTransferredEvent = TypedEvent<
@@ -203,7 +215,9 @@ export class VerificationContractToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<[string]>;
 
     modify(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -259,7 +273,9 @@ export class VerificationContractToken extends BaseContract {
   list(overrides?: CallOverrides): Promise<string>;
 
   modify(
+    tokenId: BigNumberish,
     contractAddress: string,
+    countries: string,
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -315,7 +331,9 @@ export class VerificationContractToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<string>;
 
     modify(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -341,22 +359,34 @@ export class VerificationContractToken extends BaseContract {
   };
 
   filters: {
-    "Created(uint256,address,bool)"(
+    "Created(uint256,address,string,bool)"(
       tokenId?: null,
       contractAddress?: string | null,
+      countries?: string | null,
       passed?: null
     ): TypedEventFilter<
-      [BigNumber, string, boolean],
-      { tokenId: BigNumber; contractAddress: string; passed: boolean }
+      [BigNumber, string, string, boolean],
+      {
+        tokenId: BigNumber;
+        contractAddress: string;
+        countries: string;
+        passed: boolean;
+      }
     >;
 
     Created(
       tokenId?: null,
       contractAddress?: string | null,
+      countries?: string | null,
       passed?: null
     ): TypedEventFilter<
-      [BigNumber, string, boolean],
-      { tokenId: BigNumber; contractAddress: string; passed: boolean }
+      [BigNumber, string, string, boolean],
+      {
+        tokenId: BigNumber;
+        contractAddress: string;
+        countries: string;
+        passed: boolean;
+      }
     >;
 
     "MainContractSet(address)"(
@@ -366,6 +396,36 @@ export class VerificationContractToken extends BaseContract {
     MainContractSet(
       newAddress?: string | null
     ): TypedEventFilter<[string], { newAddress: string }>;
+
+    "Modified(uint256,address,string,bool)"(
+      tokenId?: null,
+      contractAddress?: string | null,
+      countries?: string | null,
+      passed?: null
+    ): TypedEventFilter<
+      [BigNumber, string, string, boolean],
+      {
+        tokenId: BigNumber;
+        contractAddress: string;
+        countries: string;
+        passed: boolean;
+      }
+    >;
+
+    Modified(
+      tokenId?: null,
+      contractAddress?: string | null,
+      countries?: string | null,
+      passed?: null
+    ): TypedEventFilter<
+      [BigNumber, string, string, boolean],
+      {
+        tokenId: BigNumber;
+        contractAddress: string;
+        countries: string;
+        passed: boolean;
+      }
+    >;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
@@ -410,7 +470,9 @@ export class VerificationContractToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<BigNumber>;
 
     modify(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -460,7 +522,9 @@ export class VerificationContractToken extends BaseContract {
     list(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     modify(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

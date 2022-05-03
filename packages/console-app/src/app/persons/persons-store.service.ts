@@ -17,11 +17,15 @@ export class PersonsStoreService {
     private readonly contractService: ContractService
   ) {}
 
-  init() {
+  async init() {
     const persons = localStorage.getItem('persons');
     if (persons) {
       this.persons$.next(JSON.parse(persons));
     }
+
+    try {
+      await this.contractService.listPersonalToken();
+    } catch (error) {}
 
     this.subscription = this.contractService.persons$
       .asObservable()

@@ -9,4 +9,7 @@
   <mat-card-content>
     {{ translate(contract.countries) }}
   </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button (click)="modifiy(contract)">修正する</button>
+  </mat-card-actions>
 </mat-card>

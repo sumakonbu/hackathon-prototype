@@ -14,3 +14,5 @@ export interface ContractToken {
   countries: string[];
   passed: boolean;
 }
+
+export type EditMode = 'register' | 'edit';

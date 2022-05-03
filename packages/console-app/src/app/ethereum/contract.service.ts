@@ -101,6 +101,26 @@ export class ContractService {
       .catch(this.handleError);
   }
 
+  modifyContractToken(
+    tokenId: number,
+    contractAddress: string,
+    countries: [string, string, string]
+  ) {
+    if (!this.isEthereumReady) {
+      throw new Error('Ethereum not ready!');
+    }
+
+    return this.contract
+      .modifyContractToken(
+        tokenId,
+        contractAddress,
+        this.encodeCountries(countries),
+        true
+      )
+      .then(this.handleTx)
+      .catch(this.handleError);
+  }
+
   async listContractToken() {
     if (!this.isEthereumReady) {
       throw new Error('Ethereum not ready!');
@@ -194,14 +214,14 @@ export class ContractService {
   // Now specification is that 'RUS-USA-JPN' changes to '111'.
   // Ordering is fixed.
   private encodeCountries(countries: string[]) {
-    let convertedCountries: string;
+    let convertedCountries = '';
 
-    convertedCountries =
-      +countries.findIndex((country) => country === 'JPN') > -1 ? '1' : '0';
-    convertedCountries =
-      +countries.findIndex((country) => country === 'USA') > -1 ? '1' : '0';
-    convertedCountries =
-      +countries.findIndex((country) => country === 'RUS') > -1 ? '1' : '0';
+    convertedCountries +=
+      countries.findIndex((country) => country === 'JPN') > -1 ? '1' : '0';
+    convertedCountries +=
+      countries.findIndex((country) => country === 'USA') > -1 ? '1' : '0';
+    convertedCountries +=
+      countries.findIndex((country) => country === 'RUS') > -1 ? '1' : '0';
 
     return convertedCountries;
   }

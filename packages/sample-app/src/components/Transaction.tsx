@@ -14,6 +14,7 @@ export function Transaction() {
       return;
     }
 
+    setFinished(false);
     let timerId = 0;
     let counter = 0;
     timerId = window.setInterval(async () => {
@@ -47,7 +48,7 @@ export function Transaction() {
             marginTop: "20px",
           }}
         >
-          🎉🎉🎉　You Are Great! 🎉🎉🎉
+          🎉🎉🎉🎉🎉　You Are Great! 🎉🎉🎉🎉🎉
         </Alert>
       )}
     </>

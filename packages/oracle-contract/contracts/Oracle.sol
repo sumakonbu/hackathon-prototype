@@ -60,10 +60,19 @@ contract Oracle is AccessControlEnumerable {
         verificationContractToken.create(contractAddress, countries, passed);
     }
 
-    function modifyContractToken(address contractAddress, bool passed)
-        public
-        onlyRole(MODERATOR_ROLE)
-    {}
+    function modifyContractToken(
+        uint256 tokenId,
+        address contractAddress,
+        string memory countries,
+        bool passed
+    ) public onlyRole(MODERATOR_ROLE) {
+        verificationContractToken.modify(
+            tokenId,
+            contractAddress,
+            countries,
+            passed
+        );
+    }
 
     function listContractToken() public view returns (bytes memory) {
         return verificationContractToken.list();

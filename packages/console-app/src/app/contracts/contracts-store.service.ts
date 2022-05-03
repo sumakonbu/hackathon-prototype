@@ -17,11 +17,15 @@ export class ContractsStoreService {
     private readonly contractService: ContractService
   ) {}
 
-  init() {
+  async init() {
     const contracts = localStorage.getItem('contracts');
     if (contracts) {
       this.contracts$.next(JSON.parse(contracts));
     }
+
+    try {
+      await this.contractService.listContractToken();
+    } catch (error) {}
 
     this.subscription = this.contractService.contracts$
       .asObservable()
@@ -65,9 +69,12 @@ export class ContractsStoreService {
   }
 
   // It wiill be called when issueing new token.
-  updateEthAddress(contract: Pick<ContractInfo, 'id' | 'ethAddress'>) {
+  updateToken(contract: ContractInfo) {
     const newVal = this.contracts$.getValue().map((val) => {
       if (val.id === contract.id) {
+        val.appName = contract.appName;
+        val.url = contract.url;
+        val.countries = contract.countries;
         val.ethAddress = contract.ethAddress;
       }
       return val;

@@ -20,6 +20,13 @@ contract VerificationContractToken is OnlyMainContract {
     event Created(
         uint256 tokenId,
         address indexed contractAddress,
+        string indexed countries,
+        bool passed
+    );
+    event Modified(
+        uint256 tokenId,
+        address indexed contractAddress,
+        string indexed countries,
         bool passed
     );
 
@@ -51,13 +58,28 @@ contract VerificationContractToken is OnlyMainContract {
         // increment
         totalSupply = totalSupply + 1;
 
-        emit Created(tokenId, contractAddress, passed);
+        emit Created(tokenId, contractAddress, countries, passed);
     }
 
-    function modify(address contractAddress, bool passed)
-        public
-        onlyMainContract
-    {}
+    function modify(
+        uint256 tokenId,
+        address contractAddress,
+        string memory countries,
+        bool passed
+    ) public onlyMainContract {
+        require(
+            contractTokenIds[contractAddress] != 0,
+            "Contract does not exist!"
+        );
+
+        // Modify token
+        ContractToken memory p = contractTokens[tokenId];
+        p.countries = countries;
+        p.passed = passed;
+        contractTokens[tokenId] = p;
+
+        emit Modified(tokenId, contractAddress, countries, passed);
+    }
 
     function list() public view onlyMainContract returns (bytes memory) {
         ContractToken[] memory contractTokenSet = new ContractToken[](

@@ -178,6 +178,46 @@ describe("Oracle", function () {
     });
   });
 
+  describe("modifyContractToken", function () {
+    it("Should call correctly", async function () {
+      const expectedCountries = "111";
+
+      // pre-create
+      await oracle
+        .connect(deployer)
+        .createContractToken(accounts[1].address, defaultCountries, true);
+
+      // exec to modfiy
+      const txResult = await oracle
+        .connect(deployer)
+        .modifyContractToken(1, accounts[1].address, expectedCountries, true);
+      expect(txResult.hash).to.be.ok;
+
+      // assert that data changed.
+      const token = await verificationContractToken
+        .connect(deployer)
+        .contractTokens(1);
+      expect(token.countries).to.eq(expectedCountries);
+    });
+
+    it("Should revert with 'Contract does not exist!'", async function () {
+      await expect(
+        oracle
+          .connect(deployer)
+          .modifyContractToken(1, accounts[1].address, defaultCountries, true)
+      ).to.revertedWith("Contract does not exist!");
+    });
+
+    it("Should revert if caller doesn't have MODERATOR_ROLE", async function () {
+      const accountWithoutModeratorRole = accounts[1];
+      await expect(
+        oracle
+          .connect(accountWithoutModeratorRole)
+          .modifyContractToken(1, accounts[1].address, defaultCountries, true)
+      ).to.revertedWith("AccessControl: account");
+    });
+  });
+
   describe("verify", function () {
     beforeEach(async function () {
       // Prepare verified address.

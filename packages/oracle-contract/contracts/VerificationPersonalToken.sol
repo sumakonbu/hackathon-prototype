@@ -85,7 +85,10 @@ contract VerificationPersonalToken is OnlyMainContract {
         bytes memory contractCountries = bytes(countries);
         bytes memory personCountries = bytes(personalTokens[tokenId].countries);
         for (uint256 i = 0; i < personCountries.length; i++) {
-            if (personCountries[i] == contractCountries[i]) {
+            if (
+                personCountries[i] == bytes1("1") &&
+                personCountries[i] == contractCountries[i]
+            ) {
                 return (true, true, personalTokens[tokenId].passed);
             }
         }

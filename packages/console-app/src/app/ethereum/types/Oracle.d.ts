@@ -31,7 +31,7 @@ interface OracleInterface extends ethers.utils.Interface {
     "hasRole(bytes32,address)": FunctionFragment;
     "listContractToken()": FunctionFragment;
     "listPersonalToken()": FunctionFragment;
-    "modifyContractToken(address,bool)": FunctionFragment;
+    "modifyContractToken(uint256,address,string,bool)": FunctionFragment;
     "modifyPersonalToken(address,bool)": FunctionFragment;
     "purge()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
@@ -86,7 +86,7 @@ interface OracleInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "modifyContractToken",
-    values: [string, boolean]
+    values: [BigNumberish, string, string, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "modifyPersonalToken",
@@ -336,7 +336,9 @@ export class Oracle extends BaseContract {
     listPersonalToken(overrides?: CallOverrides): Promise<[string]>;
 
     modifyContractToken(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -435,7 +437,9 @@ export class Oracle extends BaseContract {
   listPersonalToken(overrides?: CallOverrides): Promise<string>;
 
   modifyContractToken(
+    tokenId: BigNumberish,
     contractAddress: string,
+    countries: string,
     passed: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -530,7 +534,9 @@ export class Oracle extends BaseContract {
     listPersonalToken(overrides?: CallOverrides): Promise<string>;
 
     modifyContractToken(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -721,7 +727,9 @@ export class Oracle extends BaseContract {
     listPersonalToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     modifyContractToken(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -826,7 +834,9 @@ export class Oracle extends BaseContract {
     listPersonalToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     modifyContractToken(
+      tokenId: BigNumberish,
       contractAddress: string,
+      countries: string,
       passed: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
