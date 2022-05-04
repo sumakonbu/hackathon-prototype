@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { ContractsStoreService } from './contracts-store.service';
+import { ContractsStoreService, defalutValue } from './contracts-store.service';
 import { ContractInfo, EditMode } from './type';
-
-const defalutValue = { id: -1 } as ContractInfo;
 
 @Component({
   selector: 'app-contracts',
@@ -26,6 +24,7 @@ export class ContractsComponent {
 
   changeTab(tabIndex: number) {
     if (tabIndex === 0) {
+      // reset
       this.editMode = 'register';
       this.token = defalutValue;
     }

@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ContractService } from '../ethereum/contract.service';
-import { MetamaskService } from '../ethereum/metamask.service';
 import { PersonalInfo } from './type';
 
+/**
+ * Data store for component that merges both local storage and contract state.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -12,21 +14,21 @@ export class PersonsStoreService {
 
   private subscription: Subscription;
 
-  constructor(
-    private readonly metamaskService: MetamaskService,
-    private readonly contractService: ContractService
-  ) {}
+  constructor(private readonly contractService: ContractService) {}
 
   async init() {
+    // restore from local storage.
     const persons = localStorage.getItem('persons');
     if (persons) {
       this.persons$.next(JSON.parse(persons));
     }
 
+    // re-fresh from contract data.
     try {
       await this.contractService.listPersonalToken();
     } catch (error) {}
 
+    // Subscribe changes of contract states.
     this.subscription = this.contractService.persons$
       .asObservable()
       .subscribe((persons) => {

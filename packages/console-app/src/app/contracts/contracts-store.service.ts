@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ContractService } from '../ethereum/contract.service';
-import { MetamaskService } from '../ethereum/metamask.service';
 import { ContractInfo } from './type';
 
+export const defalutValue = { id: -1 } as ContractInfo;
+
+/**
+ * Data store for component that merges both local storage and contract state.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -12,21 +16,21 @@ export class ContractsStoreService {
 
   private subscription: Subscription;
 
-  constructor(
-    private readonly metamaskService: MetamaskService,
-    private readonly contractService: ContractService
-  ) {}
+  constructor(private readonly contractService: ContractService) {}
 
   async init() {
+    // restore from local storage.
     const contracts = localStorage.getItem('contracts');
     if (contracts) {
       this.contracts$.next(JSON.parse(contracts));
     }
 
+    // re-fresh from contract data.
     try {
       await this.contractService.listContractToken();
     } catch (error) {}
 
+    // Subscribe changes of contract states.
     this.subscription = this.contractService.contracts$
       .asObservable()
       .subscribe((contracts) => {

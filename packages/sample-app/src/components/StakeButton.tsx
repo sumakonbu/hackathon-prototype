@@ -6,7 +6,7 @@ import abis from "../abis/Greeter.json";
 import { TransactionContext } from "../context";
 
 const contractAddress = {
-  local: "0x4180df59eA13e3051651Cc38Af95ac2166630A24",
+  local: "0x19bd608F337AE9Acffe138512D76C09A8a9788B7",
   shibuya: "0xa599e3570AbB54D33a90D337E51018c568efDf77",
 };
 

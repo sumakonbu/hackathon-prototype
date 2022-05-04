@@ -5,8 +5,8 @@ import { MetamaskService } from 'src/app/ethereum/metamask.service';
 import { countryList } from 'src/app/shared/constans';
 import { addressValidator } from 'src/app/shared/function';
 import { MessageService } from 'src/app/shared/message.service';
-import { ContractsStoreService } from '../contracts-store.service';
-import { ContractInfo, EditMode } from '../type';
+import { ContractsStoreService, defalutValue } from '../contracts-store.service';
+import { EditMode } from '../type';
 
 @Component({
   selector: 'app-contracts-register',
@@ -15,7 +15,7 @@ import { ContractInfo, EditMode } from '../type';
 })
 export class ContractsRegisterComponent implements OnChanges {
   @Input() mode: EditMode = 'register';
-  @Input() token = { id: -1 } as ContractInfo;
+  @Input() token = defalutValue;
   appName = new FormControl('', [Validators.required]);
   url = new FormControl('', []);
   address = new FormControl('', [Validators.required, addressValidator]);
@@ -103,6 +103,13 @@ export class ContractsRegisterComponent implements OnChanges {
       this.messageService.info(
         `txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`
       );
+
+      // reset
+      this.token = defalutValue;
+      this.appName.reset();
+      this.url.reset();
+      this.address.reset();
+      this.countries.reset();
     } catch (error) {
       this.messageService.error(error.message);
       return;

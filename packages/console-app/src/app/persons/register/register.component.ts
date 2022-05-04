@@ -79,6 +79,13 @@ export class PersonsRegisterComponent {
       this.messageService.info(
         `txを発行しました!ブロック取り込みまでしばらくお待ちください。 ${result.hash}`
       );
+
+      // reset
+      this.id = -1;
+      this.firstName.reset();
+      this.familyName.reset();
+      this.address.reset();
+      this.countries.reset();
     } catch (error) {
       this.messageService.error(error.message);
       return;
